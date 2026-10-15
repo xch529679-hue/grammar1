@@ -1,2020 +1,1137 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>英语语法训练器</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts: Inter & Noto Sans SC -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
-            background-color: #f8fafc;
-            -webkit-tap-highlight-color: transparent;
-        }
-        @keyframes fadeInSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .animate-fade-up {
-            animation: fadeInSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .word-chip {
-            transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
-            user-select: none;
-        }
-        .word-chip:hover:not(:disabled) {
-            transform: translateY(-2px);
-        }
-        .word-chip:active:not(:disabled) {
-            transform: translateY(0) scale(0.96);
-        }
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>汉译英·英语五大句型与语法训练器（高中/大学/自考本科）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .word-chip {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+    .word-chip:active {
+      transform: scale(0.95);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col">
+<body class="min-h-screen pb-14">
 
-    <!-- Top Navigation & Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2.5">
-            <!-- Brand Title -->
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-sm">
-                    <i class="fa-solid fa-sitemap text-base sm:text-lg"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">SyntaxLab 汉译英句型训练</h1>
-                        <span class="hidden md:inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200">3-10词精练</span>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-500">造句 + 句型判断 + 逐成分语法拆解</p>
-                </div>
-            </div>
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-3xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+          语法
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold text-slate-800 leading-tight">汉译英·句型成分训练器</h1>
+          <p class="text-[11px] text-slate-500">3-10词短句 · 高中 / 大学 / 自考成人本科</p>
+        </div>
+      </div>
 
-            <!-- Stats & Action Buttons -->
-            <div class="flex items-center gap-1.5 sm:gap-2.5">
-                <!-- Score / Streak Pill -->
-                <div class="flex items-center bg-slate-100 rounded-xl px-2.5 py-1.5 text-xs font-semibold gap-2.5 border border-slate-200/80">
-                    <div class="flex items-center gap-1 text-amber-600" title="当前连对">
-                        <i class="fa-solid fa-fire"></i>
-                        <span id="statStreak">0</span>
-                    </div>
-                    <span class="text-slate-300">|</span>
-                    <div class="flex items-center gap-1 text-emerald-600" title="已掌握句子">
-                        <i class="fa-solid fa-circle-check"></i>
-                        <span id="statSolved">0</span>/<span id="statTotal">0</span>
-                    </div>
-                </div>
+      <div class="flex items-center gap-1.5">
+        <button onclick="openCatalogModal()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+          📚 题库目录
+        </button>
+        <button onclick="openCustomModal()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition">
+          ➕ 出题
+        </button>
+        <button onclick="openGuideModal()" class="px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="五大句型速查">
+          📖
+        </button>
+      </div>
+    </div>
 
-                <!-- Share / Import Quiz Button -->
-                <button onclick="openShareModal()" class="px-2.5 sm:px-3 py-2 rounded-xl text-xs font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition flex items-center gap-1.5" title="分享战绩或导入好友题目">
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <span class="hidden sm:inline">分享/口令</span>
-                </button>
+    <!-- 第一层筛选：学段选择（高中 / 大学 / 自考成人本科） -->
+    <div class="max-w-3xl mx-auto px-3 sm:px-4 pt-1.5 pb-1 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <span class="text-[11px] font-semibold text-slate-400 shrink-0 mr-0.5">学段:</span>
+      <button onclick="setLevelFilter('ALL')" id="lvl-ALL" class="lvl-btn shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition"></button>
+      <button onclick="setLevelFilter('hs')" id="lvl-hs" class="lvl-btn shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition"></button>
+      <button onclick="setLevelFilter('uni')" id="lvl-uni" class="lvl-btn shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition"></button>
+      <button onclick="setLevelFilter('adult')" id="lvl-adult" class="lvl-btn shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition"></button>
+    </div>
 
-                <!-- Grammar Handbook Button -->
-                <button onclick="toggleModal('legendModal')" class="px-2.5 sm:px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5" title="五大基本句型速查手册">
-                    <i class="fa-solid fa-book-open text-indigo-600"></i>
-                    <span class="hidden md:inline">句型手册</span>
-                </button>
+    <!-- 第二层筛选：五大句型 + 错题/收藏 -->
+    <div class="max-w-3xl mx-auto px-3 sm:px-4 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <span class="text-[11px] font-semibold text-slate-400 shrink-0 mr-0.5">句型:</span>
+      <button onclick="setPatternFilter('ALL')" id="pat-ALL" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">全部句型</button>
+      <button onclick="setPatternFilter('SV')" id="pat-SV" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">主谓 SV</button>
+      <button onclick="setPatternFilter('SVP')" id="pat-SVP" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">主系表 SVP</button>
+      <button onclick="setPatternFilter('SVO')" id="pat-SVO" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">主谓宾 SVO</button>
+      <button onclick="setPatternFilter('SVOO')" id="pat-SVOO" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">双宾 SVOO</button>
+      <button onclick="setPatternFilter('SVOC')" id="pat-SVOC" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">宾补 SVOC</button>
+      <button onclick="setPatternFilter('MISTAKE')" id="pat-MISTAKE" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">📕 错题本 <span id="mistakeCountBadge">0</span></button>
+      <button onclick="setPatternFilter('FAV')" id="pat-FAV" class="pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition">⭐ 收藏 <span id="favCountBadge">0</span></button>
+    </div>
+  </header>
 
-                <!-- Add Custom Question Button -->
-                <button onclick="openCustomModal()" class="px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>出题</span>
-                </button>
-            </div>
+  <!-- 主体内容区 -->
+  <main class="max-w-3xl mx-auto px-3 sm:px-4 pt-3 space-y-3">
+
+    <!-- 顶部状态与模式栏 -->
+    <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center gap-3 text-xs">
+        <span class="font-semibold text-slate-700">进度: <strong id="progressText" class="text-indigo-600">1 / 150</strong></span>
+        <span class="text-slate-300">|</span>
+        <span class="text-slate-600">已掌握: <strong id="solvedCountText" class="text-emerald-600">0</strong></span>
+        <span class="text-slate-300">|</span>
+        <span class="text-slate-600">连对: 🔥 <strong id="streakText" class="text-amber-600">0</strong></span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button onclick="shuffleCurrentPool()" class="px-2 py-1 rounded text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium transition" title="打乱当前题目顺序">
+          🔀 随机抽题
+        </button>
+        <div class="inline-flex rounded-lg bg-slate-100 p-0.5">
+          <button onclick="setInputMode('blocks')" id="modeBlocksBtn" class="px-2.5 py-1 rounded-md text-xs font-medium transition">词块拼句</button>
+          <button onclick="setInputMode('typing')" id="modeTypingBtn" class="px-2.5 py-1 rounded-md text-xs font-medium transition">打字输入</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主答题卡片 -->
+    <div id="questionCard" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- 进度条 -->
+      <div class="w-full h-1.5 bg-slate-100">
+        <div id="progressBar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 1%"></div>
+      </div>
+
+      <div class="p-4 sm:p-6 space-y-4">
+        <!-- 题目标签头 -->
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span id="qLevelBadge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold">高中英语</span>
+            <span id="qWordCountBadge" class="px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600">5 词</span>
+            <span id="qDoneBadge" class="hidden px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700">✓ 已攻克</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="toggleFavoriteCurrent()" id="favBtn" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition text-base" title="收藏此句">☆</button>
+            <button onclick="speakCurrentSentence()" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium transition">🔊 朗读英文</button>
+          </div>
         </div>
 
-        <!-- Sentence Pattern & Notebook Filter Bar -->
-        <div class="bg-slate-50/90 border-t border-slate-200/80">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-3 overflow-x-auto no-scrollbar">
-                <div class="flex items-center gap-1.5 shrink-0" id="patternFilterContainer">
-                    <!-- Rendered dynamically by JS -->
-                </div>
-
-                <!-- Random & Quick Selector -->
-                <div class="flex items-center gap-2 shrink-0">
-                    <button onclick="randomQuestion()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-300 transition flex items-center gap-1" title="随机抽一题">
-                        <i class="fa-solid fa-shuffle"></i>
-                        <span class="hidden sm:inline">随机</span>
-                    </button>
-                    <select id="questionSelect" onchange="jumpToQuestion(this.value)" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 max-w-[160px] sm:max-w-[220px]">
-                        <!-- Dynamically populated -->
-                    </select>
-                </div>
-            </div>
+        <!-- 中文题目 -->
+        <div class="py-1">
+          <div class="text-xs text-slate-400 mb-1">请将下列汉语翻译为英语（注意语序与句型成分）：</div>
+          <h2 id="chinesePrompt" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug"></h2>
         </div>
-    </header>
 
-    <!-- Main Content Container -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 space-y-5">
+        <!-- 选填：顺便猜句型 -->
+        <div class="bg-slate-50 rounded-xl p-2.5 border border-slate-200/80">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-medium text-slate-600">🎯 顺便测眼力：先判断这句话属于什么句型？（可跳过）</span>
+            <span id="patternGuessResult" class="text-xs font-semibold"></span>
+          </div>
+          <div class="grid grid-cols-5 gap-1.5" id="patternGuessGroup">
+            <button onclick="selectPatternGuess('SV')" data-pat="SV" class="guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center">主谓<br><span class="text-[10px] text-slate-400">SV</span></button>
+            <button onclick="selectPatternGuess('SVP')" data-pat="SVP" class="guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center">主系表<br><span class="text-[10px] text-slate-400">SVP</span></button>
+            <button onclick="selectPatternGuess('SVO')" data-pat="SVO" class="guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center">主谓宾<br><span class="text-[10px] text-slate-400">SVO</span></button>
+            <button onclick="selectPatternGuess('SVOO')" data-pat="SVOO" class="guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center">主谓双宾<br><span class="text-[10px] text-slate-400">SVOO</span></button>
+            <button onclick="selectPatternGuess('SVOC')" data-pat="SVOC" class="guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center">主谓宾补<br><span class="text-[10px] text-slate-400">SVOC</span></button>
+          </div>
+        </div>
 
-        <!-- Empty State (For Empty Mistake / Bookmark Notebook) -->
-        <div id="emptyFilterState" class="hidden bg-white rounded-3xl border border-slate-200 p-10 text-center space-y-3">
-            <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl">
-                <i class="fa-solid fa-folder-open"></i>
+        <!-- 词块拼句模式 -->
+        <div id="blocksModeContainer" class="space-y-3">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-1.5">
+              <span>你的造句区（点击词块撤回）：</span>
+              <button onclick="clearSelectedWords()" class="text-slate-400 hover:text-slate-600">清空重选</button>
             </div>
-            <h3 id="emptyFilterTitle" class="text-lg font-bold text-slate-800">当前列表暂无题目</h3>
-            <p id="emptyFilterDesc" class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">你还没有答错的题目或收藏的句子，快去全部题库里练习吧！</p>
-            <button onclick="setPatternFilter('ALL')" class="mt-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
-                返回全部题库
+            <div id="selectedWordsBox" class="min-h-[54px] p-2.5 rounded-xl bg-indigo-50/50 border-2 border-dashed border-indigo-200 flex flex-wrap items-center gap-2"></div>
+          </div>
+
+          <div>
+            <div class="text-xs text-slate-500 mb-1.5">候选词块（点击按正确英语语序排列）：</div>
+            <div id="bankWordsBox" class="min-h-[48px] p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center gap-2"></div>
+          </div>
+        </div>
+
+        <!-- 手动打字模式 -->
+        <div id="typingModeContainer" class="hidden space-y-2">
+          <div class="flex items-center justify-between text-xs text-slate-500">
+            <span>请输入完整英文句子（忽略大小写与句尾标点）：</span>
+            <button onclick="showFirstWordHint()" class="text-indigo-600 hover:underline">💡 提示首词</button>
+          </div>
+          <input id="typingInput" type="text" placeholder="在此输入英文翻译，按 Enter 键提交..."
+            class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-base"
+            onkeydown="if(event.key==='Enter') checkAnswer()" />
+          <div id="typingHintText" class="text-xs text-amber-600 hidden"></div>
+        </div>
+
+        <!-- 操作按钮栏 -->
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <div class="flex items-center gap-1.5">
+            <button onclick="prevQuestion()" class="px-3 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-medium transition">← 上一题</button>
+            <button onclick="nextQuestion()" class="px-3 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-medium transition">下一题 →</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="revealBreakdownDirectly()" class="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium transition">
+              看解析
             </button>
+            <button onclick="checkAnswer()" id="submitBtn" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition">
+              提交验证
+            </button>
+          </div>
         </div>
-
-        <!-- Question & Interaction Card -->
-        <section id="questionMainCard" class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-            <!-- Top Thin Progress Bar -->
-            <div class="w-full h-1.5 bg-slate-100">
-                <div id="progressBarFill" class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300" style="width: 5%;"></div>
-            </div>
-
-            <!-- Card Top Bar: Progress & Mode Switcher -->
-            <div class="bg-slate-50/70 px-5 sm:px-7 py-3.5 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-2.5">
-                <div class="flex items-center flex-wrap gap-2">
-                    <span id="questionIndexBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white">
-                        第 1 / 20 题
-                    </span>
-                    <span id="wordCountBadge" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-200/80 text-slate-700">
-                        目标: 6 词
-                    </span>
-                    <span id="solvedStatusBadge" class="hidden px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <i class="fa-solid fa-check mr-1"></i>已掌握
-                    </span>
-                </div>
-
-                <!-- Right Controls: Favorite Star + Mode Switcher -->
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleFavoriteCurrent()" id="favBtn" class="w-8 h-8 rounded-xl border border-slate-200 bg-white hover:bg-amber-50 text-slate-400 flex items-center justify-center transition" title="收藏本句到重点本">
-                        <i class="fa-regular fa-star"></i>
-                    </button>
-
-                    <!-- Mode Switcher: Word Blocks vs Typing -->
-                    <div class="inline-flex p-1 rounded-xl bg-slate-200/80 text-xs font-semibold">
-                        <button id="modeBlocksBtn" onclick="switchInputMode('blocks')" class="px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-white text-slate-900 shadow-xs">
-                            <i class="fa-solid fa-cubes text-indigo-600"></i>
-                            <span>词块模式</span>
-                        </button>
-                        <button id="modeTypingBtn" onclick="switchInputMode('typing')" class="px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
-                            <i class="fa-solid fa-keyboard text-indigo-600"></i>
-                            <span>打字模式</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chinese Prompt Area -->
-            <div class="p-5 sm:p-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                    <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-language"></i> 请将以下汉语句子翻译为英语
-                        </div>
-                        <h2 id="chinesePrompt" class="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                            这个好消息让我们非常开心。
-                        </h2>
-                    </div>
-
-                    <!-- Hint Button -->
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button onclick="toggleHint()" id="hintBtn" class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-medium bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition flex items-center gap-1.5">
-                            <i class="fa-regular fa-lightbulb"></i>
-                            <span>词汇提示</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Collapsible Hint Drawer -->
-                <div id="hintPanel" class="hidden mb-5 p-3.5 sm:p-4 rounded-2xl bg-amber-50/70 border border-amber-200/90 text-xs sm:text-sm text-amber-900 animate-fade-up">
-                    <div class="flex flex-wrap items-center gap-y-2 gap-x-6">
-                        <div>
-                            <span class="font-semibold text-amber-700">核心词汇提示：</span>
-                            <span id="hintVocabText" class="font-mono bg-white px-2 py-0.5 rounded border border-amber-200">good news (好消息), make (使/让), happy (开心的)</span>
-                        </div>
-                        <div>
-                            <span class="font-semibold text-amber-700">句首词提示：</span>
-                            <span id="hintFirstWordText" class="font-mono font-bold">The ...</span>
-                        </div>
-                        <div>
-                            <span class="font-semibold text-amber-700">句型提示：</span>
-                            <span id="hintPatternText" class="font-bold">主谓宾宾补 (SVOC)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MODE 1: Word Block Assembly Area -->
-                <div id="blocksModeContainer" class="space-y-4">
-                    <!-- Selected Words Dropzone -->
-                    <div>
-                        <div class="flex items-center justify-between text-xs text-slate-500 mb-1.5">
-                            <span>你的造句区（点击下方词块添加，点击已选词块可撤回）：</span>
-                            <button onclick="clearSelectedBlocks()" class="text-slate-500 hover:text-rose-600 transition flex items-center gap-1 font-medium">
-                                <i class="fa-solid fa-rotate-left"></i> 重排
-                            </button>
-                        </div>
-                        <div id="selectedWordsZone" class="min-h-[64px] p-3 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 flex flex-wrap items-center gap-2 transition-colors">
-                            <span id="emptyZonePlaceholder" class="text-slate-400 text-xs sm:text-sm select-none">请点击下方单词卡片组成完整的英语句子...</span>
-                        </div>
-                    </div>
-
-                    <!-- Scrambled Word Bank -->
-                    <div>
-                        <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
-                            <span>候选词块库：</span>
-                            <span class="hidden sm:inline text-[11px] text-slate-400">支持键盘数字键 1-9 快速选词，Backspace 撤回</span>
-                        </div>
-                        <div id="wordBankZone" class="flex flex-wrap items-center gap-2 min-h-[44px]">
-                            <!-- Dynamically populated word buttons -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MODE 2: Manual Typing Area -->
-                <div id="typingModeContainer" class="hidden space-y-2">
-                    <label for="typingInput" class="block text-xs text-slate-500">请直接输入英文句子（支持按 Enter 键快速提交）：</label>
-                    <div class="relative">
-                        <input
-                            type="text"
-                            id="typingInput"
-                            placeholder="Type the English sentence here..."
-                            autocomplete="off"
-                            spellcheck="false"
-                            class="w-full px-4 py-3.5 pr-16 text-base sm:text-lg font-medium rounded-2xl border-2 border-slate-300 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 focus:outline-none transition text-slate-900 placeholder:text-slate-400"
-                        />
-                        <button onclick="clearTypingInput()" class="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-slate-400 hover:text-slate-600">
-                            清空
-                        </button>
-                    </div>
-                </div>
-
-                <!-- NEW FEATURE: Optional Sentence Pattern Intuition Quiz -->
-                <div class="mt-5 pt-4 border-t border-slate-100">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <i class="fa-solid fa-bullseye text-indigo-500"></i>
-                            <span>顺便测眼力：你认为这句话属于哪种基本句型？<span class="text-slate-400 font-normal">（可选，提交时一并揭晓）</span></span>
-                        </div>
-                        <div id="patternGuessContainer" class="flex flex-wrap items-center gap-1.5">
-                            <!-- Dynamically rendered 5 pattern guess buttons -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Bar: Submit / Show Answer / Next -->
-                <div class="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <button onclick="prevQuestion()" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-arrow-left"></i> 上一题
-                        </button>
-                        <button onclick="nextQuestion()" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5">
-                            下一题 <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center gap-2 flex-1 sm:flex-initial justify-end">
-                        <button onclick="revealAnswerDirectly()" id="revealBtn" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 border border-slate-200 transition">
-                            直接看解析
-                        </button>
-                        <button onclick="checkAnswer()" id="submitBtn" class="px-5 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 transition flex items-center gap-2">
-                            <i class="fa-solid fa-check"></i>
-                            <span>提交并看主谓宾拆解</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Feedback & Syntax Breakdown Result Section (Shown after submission) -->
-        <section id="analysisSection" class="hidden space-y-5 animate-fade-up">
-
-            <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-                <!-- Status Header -->
-                <div id="resultBanner" class="px-5 sm:px-7 py-4 flex flex-wrap items-center justify-between gap-3 border-b">
-                    <div class="flex items-center gap-3">
-                        <div id="resultIconBox" class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold shrink-0">
-                            <i class="fa-solid fa-check"></i>
-                        </div>
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h3 id="resultTitle" class="font-bold text-base sm:text-lg">回答正确！语序与语法结构完全匹配</h3>
-                                <span id="patternGuessResultBadge" class="hidden px-2.5 py-0.5 rounded-full text-xs font-bold"></span>
-                            </div>
-                            <p id="resultSubtitle" class="text-xs sm:text-sm opacity-90">来看看这句话的五大基本句型归属与逐成分拆解吧</p>
-                        </div>
-                    </div>
-
-                    <!-- Audio Pronunciation & Next Quick Action -->
-                    <div class="flex items-center gap-2">
-                        <button onclick="speakCurrentSentence()" class="px-3.5 py-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 border border-slate-200/80 shadow-xs text-xs font-semibold transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-volume-high text-indigo-600"></i>
-                            <span>朗读原句</span>
-                        </button>
-                        <button onclick="nextQuestion()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs text-xs font-semibold transition flex items-center gap-1.5">
-                            <span>下一题</span>
-                            <i class="fa-solid fa-forward-step"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="p-5 sm:p-8 space-y-6">
-                    <!-- 1. Prominent Sentence Pattern Structure Banner -->
-                    <div class="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs uppercase tracking-wider font-semibold text-indigo-300">核心句型归属</span>
-                                <span id="analysisPatternCode" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500 text-white">SVOC</span>
-                            </div>
-                            <div id="analysisPatternFullName" class="text-lg sm:text-2xl font-extrabold tracking-tight">
-                                主谓宾宾补句型（主语 + 谓语 + 宾语 + 宾语补足语）
-                            </div>
-                            <p id="analysisPatternDesc" class="text-xs sm:text-sm text-slate-300">
-                                谓语动词之后不但有宾语，还需要加上一个成分（宾补）来补充说明宾语的状态、身份或动作，句意才完整。
-                            </p>
-                        </div>
-
-                        <!-- Formula Visual Pills -->
-                        <div id="analysisFormulaFlow" class="flex flex-wrap items-center gap-1.5 shrink-0">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- 2. Answer Comparison + Smart Word-by-Word Diff -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                            <div class="flex items-center justify-between mb-1.5">
-                                <span class="text-xs font-semibold text-slate-400 uppercase">你的回答与逐词批改</span>
-                                <span id="diffLegendHint" class="text-[11px] text-slate-400 hidden">绿色=位置正确 | 红色=语序或拼写有误</span>
-                            </div>
-                            <div id="userAnswerDisplay" class="text-base sm:text-lg font-semibold text-slate-800 break-words flex flex-wrap items-center gap-1.5">
-                                -
-                            </div>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-200">
-                            <div class="text-xs font-semibold text-indigo-600 uppercase mb-1.5">标准参考英文</div>
-                            <div id="standardAnswerDisplay" class="text-base sm:text-lg font-bold text-indigo-950 break-words">
-                                The good news made us very happy.
-                            </div>
-                            <div id="altAnswersDisplay" class="text-xs text-slate-500 mt-1 hidden"></div>
-                        </div>
-                    </div>
-
-                    <!-- 3. Chunk-by-Chunk Syntax Breakdown Cards (Core Requirement) -->
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                                <i class="fa-solid fa-layer-group text-indigo-600"></i>
-                                <span>逐成分语法拆解（点击任意色卡可单独发音）</span>
-                            </h4>
-                            <span class="text-xs text-slate-400 hidden sm:inline">主语 / 谓语 / 宾语 / 宾补 / 表语 / 状语一目了然</span>
-                        </div>
-
-                        <div id="syntaxChunksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                            <!-- Dynamically populated syntax cards -->
-                        </div>
-                    </div>
-
-                    <!-- 4. Visual Sentence Ribbon + Chinese-English Word Order Comparison -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <!-- English Sentence Structure Ribbon -->
-                        <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/90">
-                            <div class="text-xs font-semibold text-slate-500 mb-3 flex items-center gap-1.5">
-                                <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
-                                <span>英语成分语序全景图：</span>
-                            </div>
-                            <div id="inlineRibbonContainer" class="flex flex-wrap items-stretch gap-2">
-                                <!-- Inline pill blocks -->
-                            </div>
-                        </div>
-
-                        <!-- NEW: Chinese vs English Word Order Contrast -->
-                        <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col justify-between">
-                            <div>
-                                <div class="text-xs font-semibold text-slate-500 mb-3 flex items-center justify-between">
-                                    <span class="flex items-center gap-1.5">
-                                        <i class="fa-solid fa-right-left text-amber-500"></i>
-                                        <span>中英造句语序对比：</span>
-                                    </span>
-                                    <span id="orderDiffBadge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-800">语序对比</span>
-                                </div>
-                                <div id="cnEnOrderComparison" class="space-y-2.5 text-xs">
-                                    <!-- Dynamically rendered comparison flow -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 5. Grammar Note & Key Takeaway -->
-                    <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3.5">
-                        <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                        </div>
-                        <div class="space-y-1 text-xs sm:text-sm">
-                            <div class="font-bold text-amber-950">语法点拨与易错提醒</div>
-                            <p id="grammarNoteText" class="text-amber-900 leading-relaxed">
-                                make 作使役动词时，常用结构为“make + 宾语 + 形容词/动词原形（宾补）”。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 text-center text-xs text-slate-400 border-t border-slate-200/60 mt-6">
-        SyntaxLab 汉译英英语语法训练器 · 支持自动记录错题、自定义出题与微信口令分享
-    </footer>
-
-    <!-- MODAL 1: Five Basic Sentence Patterns & Component Legend Guide -->
-    <div id="legendModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fade-up">
-            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-book-open text-indigo-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">英语五大基本句型与句子成分速查手册</h3>
-                </div>
-                <button onclick="toggleModal('legendModal')" class="w-8 h-8 rounded-lg hover:bg-slate-200 text-slate-500 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <div class="p-6 overflow-y-auto space-y-6 text-sm">
-                <div>
-                    <h4 class="font-bold text-slate-900 mb-3">一、英语五大基本句型（所有英语句子的骨架）</h4>
-                    <div class="grid grid-cols-1 gap-3">
-                        <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                                <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-bold text-xs mr-2">1. SV 主谓</span>
-                                <span class="font-semibold text-slate-800">主语 + 不及物动词</span>
-                                <p class="text-xs text-slate-500 mt-1">谓语动词本身意思完整，不需要跟宾语（常搭配状语修饰时间/地点/方式）。</p>
-                            </div>
-                            <div class="text-xs font-mono bg-white px-3 py-2 rounded-xl border border-slate-200 shrink-0">
-                                <span class="text-blue-600 font-bold">The sun</span> <span class="text-rose-600 font-bold">rises</span> <span class="text-slate-500">in the east</span>.
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                                <span class="px-2 py-0.5 rounded bg-purple-600 text-white font-bold text-xs mr-2">2. SVP 主系表</span>
-                                <span class="font-semibold text-slate-800">主语 + 系动词 + 表语</span>
-                                <p class="text-xs text-slate-500 mt-1">说明主语的身份、特征或状态。常见系动词：be, look, sound, feel, become, turn, seem。</p>
-                            </div>
-                            <div class="text-xs font-mono bg-white px-3 py-2 rounded-xl border border-slate-200 shrink-0">
-                                <span class="text-blue-600 font-bold">Her voice</span> <span class="text-rose-600 font-bold">sounds</span> <span class="text-purple-600 font-bold">very sweet</span>.
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                                <span class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-xs mr-2">3. SVO 主谓宾</span>
-                                <span class="font-semibold text-slate-800">主语 + 及物动词 + 宾语</span>
-                                <p class="text-xs text-slate-500 mt-1">主语发出动作，宾语是动作的承受者。</p>
-                            </div>
-                            <div class="text-xs font-mono bg-white px-3 py-2 rounded-xl border border-slate-200 shrink-0">
-                                <span class="text-blue-600 font-bold">She</span> <span class="text-rose-600 font-bold">solved</span> <span class="text-emerald-600 font-bold">the problem</span>.
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                                <span class="px-2 py-0.5 rounded bg-teal-600 text-white font-bold text-xs mr-2">4. SVOO 主谓双宾</span>
-                                <span class="font-semibold text-slate-800">主语 + 谓语 + 间接宾语(人) + 直接宾语(物)</span>
-                                <p class="text-xs text-slate-500 mt-1">常见于 give, teach, show, buy, make, lend 等带“给予/传递”含义的动词。</p>
-                            </div>
-                            <div class="text-xs font-mono bg-white px-3 py-2 rounded-xl border border-slate-200 shrink-0">
-                                <span class="text-blue-600 font-bold">He</span> <span class="text-rose-600 font-bold">gave</span> <span class="text-teal-600 font-bold">me</span> <span class="text-emerald-600 font-bold">a book</span>.
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                                <span class="px-2 py-0.5 rounded bg-amber-600 text-white font-bold text-xs mr-2">5. SVOC 主谓宾宾补</span>
-                                <span class="font-semibold text-slate-800">主语 + 谓语 + 宾语 + 宾语补足语</span>
-                                <p class="text-xs text-slate-500 mt-1">宾语和宾补之间存在逻辑上的“主谓/主系表关系”（如：us happy -> we are happy）。</p>
-                            </div>
-                            <div class="text-xs font-mono bg-white px-3 py-2 rounded-xl border border-slate-200 shrink-0">
-                                <span class="text-blue-600 font-bold">News</span> <span class="text-rose-600 font-bold">made</span> <span class="text-emerald-600 font-bold">us</span> <span class="text-amber-600 font-bold">very happy</span>.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-bold text-slate-900 mb-2">二、如何秒分“主谓双宾 (SVOO)”与“主谓宾宾补 (SVOC)”？</h4>
-                    <p class="text-xs sm:text-sm text-slate-600 bg-indigo-50/70 p-4 rounded-2xl border border-indigo-100 leading-relaxed">
-                        <strong>黄金检验法：</strong>在后面两个成分之间加一个系动词 <code class="px-1.5 py-0.5 bg-white rounded border">be (is/am/are)</code>，看逻辑是否通顺：<br>
-                        • <code class="font-mono">He gave me a book.</code> → “I am a book（我是一本书）” 逻辑不通 ❌ → 所以是<strong>双宾语 (SVOO)</strong>。<br>
-                        • <code class="font-mono">News made us happy.</code> → “We are happy（我们很开心）” 逻辑完全成立 ✅ → 所以是<strong>宾语+宾补 (SVOC)</strong>。
-                    </p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- MODAL 2: Custom Question Builder -->
-    <div id="customModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fade-up">
-            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-plus-circle text-indigo-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">自定义添加汉译英语法题目</h3>
-                </div>
-                <button onclick="toggleModal('customModal')" class="w-8 h-8 rounded-lg hover:bg-slate-200 text-slate-500 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <div class="p-6 overflow-y-auto space-y-4 text-sm">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">中文题目（必填）</label>
-                        <input id="customZh" type="text" placeholder="例如：音乐使人放松。" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">所属五大基本句型</label>
-                        <select id="customPattern" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
-                            <option value="SVO">SVO · 主谓宾</option>
-                            <option value="SVOC">SVOC · 主谓宾宾补</option>
-                            <option value="SVP">SVP · 主系表</option>
-                            <option value="SVOO">SVOO · 主谓双宾</option>
-                            <option value="SV">SV · 主谓</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">标准英文句子（3-10个词，输入后自动生成成分标注框）</label>
-                    <input id="customEn" type="text" oninput="generateCustomChunkTagger()" placeholder="例如：Music makes people relaxed." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
-                </div>
-
-                <!-- Interactive Component Role Tagger -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">为每个单词指定语法成分（相邻相同成分将自动合并展示）：</label>
-                    <div id="customChunksTagger" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-52 overflow-y-auto">
-                        <span class="text-xs text-slate-400">请先在上方输入英文句子...</span>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">语法要点解析（选填）</label>
-                    <input id="customNote" type="text" placeholder="例如：makes 为谓语，people 为宾语，形容词 relaxed 作宾语补足语。" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
-                </div>
-
-                <div id="customFormError" class="hidden text-xs text-rose-600 font-medium"></div>
-            </div>
-
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2.5">
-                <button onclick="toggleModal('customModal')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-200">取消</button>
-                <button onclick="saveCustomQuestion()" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs">
-                    添加到练习题库
-                </button>
-            </div>
+    <!-- 语法拆解与批改结果区 -->
+    <div id="resultPanel" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- 顶部批改横幅 -->
+      <div id="resultBanner" class="px-4 py-3 border-b flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span id="resultIcon" class="text-lg"></span>
+          <div>
+            <div id="resultTitle" class="font-bold text-sm sm:text-base"></div>
+            <div id="resultSubtitle" class="text-xs opacity-90"></div>
+          </div>
         </div>
+        <button onclick="nextQuestion()" class="px-3 py-1.5 rounded-lg bg-white/90 hover:bg-white text-slate-800 text-xs font-bold shadow-sm transition">
+          下一题 →
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-6 space-y-5">
+        <!-- 逐词纠错对比（仅当答错时显示） -->
+        <div id="wordDiffSection" class="hidden bg-rose-50/70 border border-rose-200 rounded-xl p-3 space-y-1.5">
+          <div class="text-xs font-semibold text-rose-800">🔍 你的造句逐词诊断（绿色=位置正确，黄色=语序放错，红色=拼写有误）：</div>
+          <div id="wordDiffBox" class="flex flex-wrap gap-1.5 pt-1"></div>
+        </div>
+
+        <!-- 核心句型公式横幅 -->
+        <div class="bg-slate-900 text-white rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-indigo-300 font-semibold">本句核心语法句型</div>
+            <div id="sentencePatternTitle" class="text-base sm:text-lg font-bold mt-0.5"></div>
+          </div>
+          <div id="sentencePatternFormula" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs sm:text-sm font-mono text-amber-300 self-start sm:self-auto"></div>
+        </div>
+
+        <!-- 逐成分可视化卡片拆解 -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs sm:text-sm font-bold text-slate-700">🧩 句子成分拆解（主谓宾/宾补/表语/状语一目了然）</h3>
+            <span class="text-[11px] text-slate-400">点击卡片可单独发音</span>
+          </div>
+          <div id="syntaxCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"></div>
+        </div>
+
+        <!-- 中英语序思维对比 -->
+        <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 space-y-2">
+          <div class="text-xs font-bold text-slate-700">🔄 中英语序对比（体会为什么英语这样排）：</div>
+          <div id="orderComparisonBox" class="text-xs text-slate-600 space-y-1.5"></div>
+        </div>
+
+        <!-- 考纲语法要点 -->
+        <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 flex items-start gap-2.5">
+          <span class="text-base">💡</span>
+          <div class="text-xs sm:text-sm text-amber-900 leading-relaxed">
+            <span class="font-bold">考点与语法解析：</span>
+            <span id="grammarTipText"></span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- MODAL 3: Share & Friend Challenge Code Modal -->
-    <div id="shareModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fade-up">
-            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-share-nodes text-emerald-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">好友挑战与题库口令共享</h3>
-                </div>
-                <button onclick="toggleModal('shareModal')" class="w-8 h-8 rounded-lg hover:bg-slate-200 text-slate-500 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
+  </main>
 
-            <div class="p-6 space-y-5 text-sm">
-                <!-- Share Current Question / Stats -->
-                <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2.5">
-                    <div class="font-bold text-emerald-950 flex items-center gap-1.5">
-                        <i class="fa-brands fa-weixin text-emerald-600"></i>
-                        <span>1. 考考微信好友（复制当前题目与战绩）</span>
-                    </div>
-                    <p class="text-xs text-emerald-800">生成一段带题目和语法挑战的文字，直接粘贴发给微信好友：</p>
-                    <button onclick="copyWeChatChallenge()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition flex items-center justify-center gap-1.5">
-                        <i class="fa-regular fa-copy"></i>
-                        <span id="copyChallengeBtnText">一键复制微信挑战文案</span>
-                    </button>
-                </div>
-
-                <!-- Export / Import Custom Questions Code -->
-                <div class="space-y-3">
-                    <div class="font-bold text-slate-900 flex items-center justify-between">
-                        <span>2. 自定义题目口令同步</span>
-                        <button onclick="exportCustomCode()" class="text-xs text-indigo-600 hover:underline font-semibold">生成我的自定义题库口令</button>
-                    </div>
-                    <p class="text-xs text-slate-500">如果你在手机上自己出了几道新题，点击上方“生成口令”发给朋友，朋友在下方粘贴即可同步你的所有自定义题目：</p>
-                    <textarea id="shareCodeInput" rows="3" placeholder="在此粘贴好友发来的题库同步口令，或点击上方生成口令..." class="w-full p-3 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
-                    <div class="flex items-center justify-between gap-2">
-                        <span id="shareModalMsg" class="text-xs font-medium text-emerald-600"></span>
-                        <button onclick="importCustomCode()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">
-                            导入口令中的题目
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <!-- 题库目录弹窗（按学段/句型浏览全部150+题） -->
+  <div id="catalogModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base text-slate-800">📚 题库总览与快速跳题</h3>
+          <p id="catalogSubTitle" class="text-xs text-slate-500">当前筛选共 150 道题</p>
         </div>
+        <button onclick="closeCatalogModal()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">✕</button>
+      </div>
+      <div id="catalogListContainer" class="p-3 overflow-y-auto space-y-1.5 flex-1"></div>
     </div>
+  </div>
 
-    <!-- JavaScript Application Logic -->
-    <script>
-        // ============================================================================
-        // 1. GRAMMAR ROLES & SENTENCE PATTERN DEFINITIONS
-        // ============================================================================
-        const GRAMMAR_ROLES = {
-            S: {
-                code: 'S',
-                label: '主语 Subject',
-                short: '主语 (S)',
-                cardClass: 'bg-blue-50/90 border-blue-200 text-blue-950',
-                badgeClass: 'bg-blue-600 text-white',
-                pillClass: 'border-b-4 border-blue-500 bg-blue-50/70 text-blue-900'
-            },
-            V: {
-                code: 'V',
-                label: '谓语 Verb',
-                short: '谓语 (V)',
-                cardClass: 'bg-rose-50/90 border-rose-200 text-rose-950',
-                badgeClass: 'bg-rose-600 text-white',
-                pillClass: 'border-b-4 border-rose-500 bg-rose-50/70 text-rose-900'
-            },
-            LV: {
-                code: 'LV',
-                label: '系动词 Link Verb',
-                short: '系动词 (V)',
-                cardClass: 'bg-rose-50/90 border-rose-200 text-rose-950',
-                badgeClass: 'bg-rose-600 text-white',
-                pillClass: 'border-b-4 border-rose-500 bg-rose-50/70 text-rose-900'
-            },
-            O: {
-                code: 'O',
-                label: '宾语 Object',
-                short: '宾语 (O)',
-                cardClass: 'bg-emerald-50/90 border-emerald-200 text-emerald-950',
-                badgeClass: 'bg-emerald-600 text-white',
-                pillClass: 'border-b-4 border-emerald-500 bg-emerald-50/70 text-emerald-900'
-            },
-            IO: {
-                code: 'IO',
-                label: '间接宾语 Indirect Obj.',
-                short: '间接宾语 (IO)',
-                cardClass: 'bg-teal-50/90 border-teal-200 text-teal-950',
-                badgeClass: 'bg-teal-600 text-white',
-                pillClass: 'border-b-4 border-teal-500 bg-teal-50/70 text-teal-900'
-            },
-            DO: {
-                code: 'DO',
-                label: '直接宾语 Direct Obj.',
-                short: '直接宾语 (DO)',
-                cardClass: 'bg-emerald-50/90 border-emerald-200 text-emerald-950',
-                badgeClass: 'bg-emerald-600 text-white',
-                pillClass: 'border-b-4 border-emerald-500 bg-emerald-50/70 text-emerald-900'
-            },
-            C: {
-                code: 'C',
-                label: '宾语补足语 Complement',
-                short: '宾补 (C)',
-                cardClass: 'bg-amber-50/90 border-amber-300 text-amber-950',
-                badgeClass: 'bg-amber-500 text-white',
-                pillClass: 'border-b-4 border-amber-500 bg-amber-50/70 text-amber-900'
-            },
-            P: {
-                code: 'P',
-                label: '表语 Predicative',
-                short: '表语 (P)',
-                cardClass: 'bg-purple-50/90 border-purple-200 text-purple-950',
-                badgeClass: 'bg-purple-600 text-white',
-                pillClass: 'border-b-4 border-purple-500 bg-purple-50/70 text-purple-900'
-            },
-            ADV: {
-                code: 'ADV',
-                label: '状语 Adverbial',
-                short: '状语 (Adv)',
-                cardClass: 'bg-slate-100 border-slate-300 text-slate-800',
-                badgeClass: 'bg-slate-600 text-white',
-                pillClass: 'border-b-4 border-slate-400 bg-slate-100 text-slate-700'
-            },
-            ATTR: {
-                code: 'ATTR',
-                label: '定语 Attribute',
-                short: '定语 (Attr)',
-                cardClass: 'bg-slate-100 border-slate-300 text-slate-800',
-                badgeClass: 'bg-slate-500 text-white',
-                pillClass: 'border-b-4 border-slate-400 bg-slate-100 text-slate-700'
-            }
-        };
+  <!-- 五大句型速查弹窗 -->
+  <div id="guideModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-xl overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-bold text-base text-slate-800">📖 英语五大基本句型与成分速查表</h3>
+        <button onclick="closeGuideModal()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-indigo-700">1. 主谓 (SV) —— 主语 + 不及物动词</div>
+          <p class="mt-1 text-slate-600">动词本身意思完整，后面不需要跟动作承受者，但常跟时间/地点/方式状语 (Adv)。<br>例：<span class="font-mono text-slate-800">Great changes (主) have taken place (谓) recently (状).</span></p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-purple-700">2. 主系表 (SVP) —— 主语 + 系动词 + 表语</div>
+          <p class="mt-1 text-slate-600">系动词（be / 感官 sound, look / 变化 become, get, turn / 保持 keep, remain / 证明 prove）后接形容词、名词或介词短语说明主语状态。<br>例：<span class="font-mono text-slate-800">His suggestion (主) sounds (系) quite reasonable (表).</span></p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-emerald-700">3. 主谓宾 (SVO) —— 主语 + 及物动词 + 宾语</div>
+          <p class="mt-1 text-slate-600">动作有明确的承受对象（宾语）。注意汉语常把方式/时间放中间，英语通常遵循“主谓宾 + 方式 + 地点 + 时间”。<br>例：<span class="font-mono text-slate-800">Regular exercise (主) can improve (谓) your health (宾).</span></p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-amber-700">4. 主谓双宾 (SVOO) —— 主语 + 谓语 + 间接宾语(人) + 直接宾语(物)</div>
+          <p class="mt-1 text-slate-600">常见动词：give, offer, show, send, teach, tell, lend, buy, award, grant。判断诀窍：两个宾语之间<strong>没有</strong>“某人是某物”的逻辑主谓关系。<br>例：<span class="font-mono text-slate-800">The company (主) offered (谓) him (间宾) a good job (直宾).</span></p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-rose-700">5. 主谓宾宾补 (SVOC) —— 主语 + 谓语 + 宾语 + 宾语补足语</div>
+          <p class="mt-1 text-slate-600">宾补用来补充说明宾语“是什么、怎么样或做什么”。判断诀窍：<strong>宾语 + 宾补</strong>之间可以加上 is/are 或构成“某人做某事”的逻辑主谓关系。<br>例：<span class="font-mono text-slate-800">Good habits (主) keep (谓) us (宾) healthy (宾补).</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        const SENTENCE_PATTERNS = {
-            ALL: {
-                id: 'ALL',
-                shortLabel: '全部题库',
-                fullName: '五大句型混合训练',
-                formula: [],
-                desc: ''
-            },
-            SV: {
-                id: 'SV',
-                shortLabel: '主谓 SV',
-                fullName: '主谓句型（主语 + 不及物动词）',
-                formula: ['S 主语', 'V 谓语(不及物)', '(Adv 状语)'],
-                desc: '谓语动词是不及物动词，本身表意完整，无需宾语，常搭配表示时间、地点或方式的状语。'
-            },
-            SVP: {
-                id: 'SVP',
-                shortLabel: '主系表 SVP',
-                fullName: '主系表句型（主语 + 系动词 + 表语）',
-                formula: ['S 主语', 'V 系动词', 'P 表语'],
-                desc: '系动词（be / 感官动词 / 变化动词）连接主语和表语，用来说明主语的性质、特征、状态或身份。'
-            },
-            SVO: {
-                id: 'SVO',
-                shortLabel: '主谓宾 SVO',
-                fullName: '主谓宾句型（主语 + 及物动词 + 宾语）',
-                formula: ['S 主语', 'V 谓语(及物)', 'O 宾语'],
-                desc: '主语是动作的执行者，及物动词后直接跟动作的承受者（宾语）。'
-            },
-            SVOO: {
-                id: 'SVOO',
-                shortLabel: '双宾 SVOO',
-                fullName: '主谓双宾句型（主语 + 谓语 + 间接宾语 + 直接宾语）',
-                formula: ['S 主语', 'V 谓语', 'IO 间接宾语(人)', 'DO 直接宾语(物)'],
-                desc: '谓语动词后接两个宾语：通常前面是表示“人”的间接宾语，后面是表示“物”的直接宾语。'
-            },
-            SVOC: {
-                id: 'SVOC',
-                shortLabel: '宾补 SVOC',
-                fullName: '主谓宾宾补句型（主语 + 谓语 + 宾语 + 宾语补足语）',
-                formula: ['S 主语', 'V 谓语', 'O 宾语', 'C 宾语补足语'],
-                desc: '宾语后面加上宾语补足语，用来补充说明宾语的身份、状态或正在做的动作（宾语与宾补构成逻辑主谓关系）。'
-            }
-        };
+  <!-- 自定义添题弹窗 -->
+  <div id="customModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <h3 class="font-bold text-base text-slate-800">➕ 添加自定义句子</h3>
+        <button onclick="closeCustomModal()" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500">✕</button>
+      </div>
+      <div class="space-y-2.5 text-xs sm:text-sm">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-600 mb-1 font-medium">所属学段：</label>
+            <select id="customLevel" class="w-full px-2.5 py-2 rounded-lg border border-slate-300">
+              <option value="hs">高中英语</option>
+              <option value="uni">大学四六级</option>
+              <option value="adult">自考成人本科</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 mb-1 font-medium">句型结构：</label>
+            <select id="customPattern" class="w-full px-2.5 py-2 rounded-lg border border-slate-300">
+              <option value="SV">主谓 (SV)</option>
+              <option value="SVP">主系表 (SVP)</option>
+              <option value="SVO" selected>主谓宾 (SVO)</option>
+              <option value="SVOO">主谓双宾 (SVOO)</option>
+              <option value="SVOC">主谓宾宾补 (SVOC)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-600 mb-1 font-medium">中文题目：</label>
+          <input id="customCn" type="text" placeholder="例如：知识使我们更强大。" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-slate-600 mb-1 font-medium">语法分块（用 | 分隔每个成分，格式：英文:角色代码:中文说明）：</label>
+          <input id="customSpec" type="text" placeholder="Knowledge:S:主语|makes:V:谓语|us:O:宾语|stronger:C:宾语补足语" class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs" />
+          <p class="text-[11px] text-slate-400 mt-1">支持角色代码：S(主语) V(谓语/系动词) O(宾语) P(表语) IO(间宾) DO(直宾) C(宾补) Adv(状语) Attr(定语)</p>
+        </div>
+        <div>
+          <label class="block text-slate-600 mb-1 font-medium">语法提示（选填）：</label>
+          <input id="customTip" type="text" placeholder="例如：make + 宾语 + 形容词比较级作宾补" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeCustomModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium">取消</button>
+        <button onclick="saveCustomQuestion()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold">保存到题库</button>
+      </div>
+    </div>
+  </div>
 
-        // ============================================================================
-        // 2. BUILT-IN QUESTION BANK (20 Typical 3-10 Word Sentences Across 5 Patterns)
-        // ============================================================================
-        const DEFAULT_QUESTIONS = [
-            // --- SVOC (主谓宾宾补) ---
-            {
-                id: 1,
-                pattern: 'SVOC',
-                zh: '这个好消息让我们非常开心。',
-                en: 'The good news made us very happy.',
-                alt: ['This good news made us very happy.'],
-                vocabHint: 'good news (好消息), make (使/让), very happy (非常开心)',
-                chunks: [
-                    { text: 'The good news', role: 'S', cn: '这个好消息', detail: '名词短语作主语（good 作定语修饰 news）' },
-                    { text: 'made', role: 'V', cn: '让 / 使', detail: '使役动词作谓语（一般过去时）' },
-                    { text: 'us', role: 'O', cn: '我们', detail: '人称代词宾格作宾语' },
-                    { text: 'very happy', role: 'C', cn: '非常开心', detail: '形容词短语作宾语补足语，补充说明宾语 us 的状态' }
-                ],
-                note: 'make + 宾语 + 形容词（作宾补）是高频 SVOC 结构。切记宾补描述宾语的状态，要用形容词 happy，不能误用副词 happily。'
-            },
-            {
-                id: 2,
-                pattern: 'SVOC',
-                zh: '我们每天保持教室整洁。',
-                en: 'We keep our classroom clean every day.',
-                alt: ['We keep the classroom clean every day.'],
-                vocabHint: 'keep (保持), classroom (教室), clean (整洁的/干净的)',
-                chunks: [
-                    { text: 'We', role: 'S', cn: '我们', detail: '主格代词作主语' },
-                    { text: 'keep', role: 'V', cn: '保持', detail: '及物动词作谓语' },
-                    { text: 'our classroom', role: 'O', cn: '我们的教室', detail: '名词短语作宾语' },
-                    { text: 'clean', role: 'C', cn: '整洁的', detail: '形容词作宾语补足语，说明教室的状态' },
-                    { text: 'every day', role: 'ADV', cn: '每天', detail: '时间状语，英语中常放在句尾' }
-                ],
-                note: '汉语说“我们【每天】保持教室整洁”，时间状语在动词前；英语则先写完核心骨架 We keep our classroom clean，再把时间状语 every day 放句尾。'
-            },
-            {
-                id: 3,
-                pattern: 'SVOC',
-                zh: '我发现这本书很容易理解。',
-                en: 'I found this book easy to understand.',
-                alt: ['I find this book easy to understand.'],
-                vocabHint: 'find/found (发现), this book (这本书), easy to understand (容易理解)',
-                chunks: [
-                    { text: 'I', role: 'S', cn: '我', detail: '主语' },
-                    { text: 'found', role: 'V', cn: '发现/觉得', detail: '谓语动词' },
-                    { text: 'this book', role: 'O', cn: '这本书', detail: '宾语' },
-                    { text: 'easy to understand', role: 'C', cn: '很容易理解', detail: '形容词+不定式短语作宾语补足语' }
-                ],
-                note: '“find + 宾语 + 形容词 (宾补)”意为“发现某物处于某种状态”。检验方法：This book is easy to understand 逻辑成立，故为 SVOC。'
-            },
-            {
-                id: 4,
-                pattern: 'SVOC',
-                zh: '父母鼓励我追求自己的梦想。',
-                en: 'My parents encourage me to follow my dreams.',
-                alt: ['Parents encourage me to pursue my dreams.', 'My parents encourage me to pursue my dreams.'],
-                vocabHint: 'encourage sb. to do (鼓励某人做某事), follow my dreams (追求梦想)',
-                chunks: [
-                    { text: 'My parents', role: 'S', cn: '我的父母', detail: '名词短语作主语' },
-                    { text: 'encourage', role: 'V', cn: '鼓励', detail: '谓语动词' },
-                    { text: 'me', role: 'O', cn: '我', detail: '代词宾格作宾语' },
-                    { text: 'to follow my dreams', role: 'C', cn: '追求我的梦想', detail: '动词不定式短语作宾语补足语，说明宾语 me 要去做的动作' }
-                ],
-                note: '在“encourage / ask / want / tell + sb. + to do sth.”结构中，不定式 to do sth. 就是典型的【宾语补足语】。'
-            },
+  <script>
+    // 角色标签与颜色配置
+    const ROLE_META = {
+      S:    { code: 'S',    name: '主语 (Subject)',         badge: 'bg-blue-100 text-blue-800 border-blue-200',     card: 'bg-blue-50/70 border-blue-200 text-blue-950' },
+      V:    { code: 'V',    name: '谓语/系动词 (Verb)',      badge: 'bg-rose-100 text-rose-800 border-rose-200',     card: 'bg-rose-50/70 border-rose-200 text-rose-950' },
+      O:    { code: 'O',    name: '宾语 (Object)',          badge: 'bg-emerald-100 text-emerald-800 border-emerald-200', card: 'bg-emerald-50/70 border-emerald-200 text-emerald-950' },
+      P:    { code: 'P',    name: '表语 (Predicative)',     badge: 'bg-purple-100 text-purple-800 border-purple-200', card: 'bg-purple-50/70 border-purple-200 text-purple-950' },
+      IO:   { code: 'IO',   name: '间接宾语 (Indirect Obj)', badge: 'bg-amber-100 text-amber-800 border-amber-200',   card: 'bg-amber-50/70 border-amber-200 text-amber-950' },
+      DO:   { code: 'DO',   name: '直接宾语 (Direct Obj)',   badge: 'bg-teal-100 text-teal-800 border-teal-200',     card: 'bg-teal-50/70 border-teal-200 text-teal-950' },
+      C:    { code: 'C',    name: '宾语补足语 (Complement)', badge: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200', card: 'bg-fuchsia-50/70 border-fuchsia-200 text-fuchsia-950' },
+      Adv:  { code: 'Adv',  name: '状语 (Adverbial)',       badge: 'bg-slate-200 text-slate-700 border-slate-300',  card: 'bg-slate-100/80 border-slate-300 text-slate-800' },
+      Attr: { code: 'Attr', name: '定语 (Attribute)',       badge: 'bg-cyan-100 text-cyan-800 border-cyan-200',     card: 'bg-cyan-50/70 border-cyan-200 text-cyan-950' }
+    };
 
-            // --- SVOO (主谓双宾) ---
-            {
-                id: 5,
-                pattern: 'SVOO',
-                zh: '他给了我一本有趣的书。',
-                en: 'He gave me an interesting book.',
-                alt: [],
-                vocabHint: 'gave (给，过去式), an interesting book (一本有趣的书)',
-                chunks: [
-                    { text: 'He', role: 'S', cn: '他', detail: '主语' },
-                    { text: 'gave', role: 'V', cn: '给了', detail: '双宾动词作谓语' },
-                    { text: 'me', role: 'IO', cn: '我', detail: '间接宾语（动作传递的对象：人）' },
-                    { text: 'an interesting book', role: 'DO', cn: '一本有趣的书', detail: '直接宾语（动作传递的具体事物）' }
-                ],
-                note: 'give 是典型的双宾语动词：give sb. (间接宾语) sth. (直接宾语)。注意 interesting 以元音音素开头，冠词用 an。'
-            },
-            {
-                id: 6,
-                pattern: 'SVOO',
-                zh: '妈妈给我做了一个生日蛋糕。',
-                en: 'Mom made me a birthday cake.',
-                alt: ['My mom made me a birthday cake.', 'Mother made me a birthday cake.'],
-                vocabHint: 'made (制作), birthday cake (生日蛋糕)',
-                chunks: [
-                    { text: 'Mom', role: 'S', cn: '妈妈', detail: '主语' },
-                    { text: 'made', role: 'V', cn: '制作了', detail: '谓语动词' },
-                    { text: 'me', role: 'IO', cn: '我', detail: '间接宾语（受益人）' },
-                    { text: 'a birthday cake', role: 'DO', cn: '一个生日蛋糕', detail: '直接宾语（制作出的物品）' }
-                ],
-                note: '对比第1题：同样是 made，这里“我 ≠ 生日蛋糕”，所以是【主谓双宾 SVOO】（可改写为 made a birthday cake for me），而不是宾补！'
-            },
-            {
-                id: 7,
-                pattern: 'SVOO',
-                zh: '王老师教我们英语语法。',
-                en: 'Mr. Wang teaches us English grammar.',
-                alt: ['Teacher Wang teaches us English grammar.'],
-                vocabHint: 'Mr. Wang (王老师), teaches (教，三单), English grammar (英语语法)',
-                chunks: [
-                    { text: 'Mr. Wang', role: 'S', cn: '王老师', detail: '专有名词作主语' },
-                    { text: 'teaches', role: 'V', cn: '教', detail: '谓语动词（第三人称单数）' },
-                    { text: 'us', role: 'IO', cn: '我们', detail: '间接宾语（学生）' },
-                    { text: 'English grammar', role: 'DO', cn: '英语语法', detail: '直接宾语（教授的内容）' }
-                ],
-                note: 'teach sb. sth. 是典型的【主谓双宾 SVOO】结构，us 是间接宾语，English grammar 是直接宾语。'
-            },
-            {
-                id: 8,
-                pattern: 'SVOO',
-                zh: '她借给了朋友一些钱。',
-                en: 'She lent her friend some money.',
-                alt: ['She lent a friend some money.'],
-                vocabHint: 'lent (借出，lend的过去式), her friend (她的朋友), some money (一些钱)',
-                chunks: [
-                    { text: 'She', role: 'S', cn: '她', detail: '主语' },
-                    { text: 'lent', role: 'V', cn: '借给了', detail: '双宾动词 lend 的过去式' },
-                    { text: 'her friend', role: 'IO', cn: '她的朋友', detail: '间接宾语（接收人）' },
-                    { text: 'some money', role: 'DO', cn: '一些钱', detail: '直接宾语（借出的物品）' }
-                ],
-                note: 'lend sb. sth. = lend sth. to sb. 属于主谓双宾结构（SVOO）。'
-            },
+    const PATTERN_META = {
+      SV:   { name: '主谓句型 (SV)',         formula: '主语 (S) + 不及物动词 (V) [+ 状语]' },
+      SVP:  { name: '主系表句型 (SVP)',       formula: '主语 (S) + 系动词 (V) + 表语 (P)' },
+      SVO:  { name: '主谓宾句型 (SVO)',       formula: '主语 (S) + 及物动词 (V) + 宾语 (O)' },
+      SVOO: { name: '主谓双宾句型 (SVOO)',    formula: '主语 (S) + 谓语 (V) + 间接宾语(人) + 直接宾语(物)' },
+      SVOC: { name: '主谓宾宾补句型 (SVOC)',  formula: '主语 (S) + 谓语 (V) + 宾语 (O) + 宾语补足语 (C)' }
+    };
 
-            // --- SVO (主谓宾) ---
-            {
-                id: 9,
-                pattern: 'SVO',
-                zh: '她很快解决了那个难题。',
-                en: 'She solved the difficult problem quickly.',
-                alt: ['She quickly solved the difficult problem.'],
-                vocabHint: 'solved (解决), difficult problem (难题), quickly (很快地)',
-                chunks: [
-                    { text: 'She', role: 'S', cn: '她', detail: '主语' },
-                    { text: 'solved', role: 'V', cn: '解决了', detail: '及物动词作谓语' },
-                    { text: 'the difficult problem', role: 'O', cn: '那个难题', detail: '名词短语作宾语' },
-                    { text: 'quickly', role: 'ADV', cn: '很快地', detail: '方式状语，修饰动词 solved（注意不是宾补）' }
-                ],
-                note: '很多同学会把句尾的副词 quickly 误认为宾补！记住：副词 quickly 修饰的是动作 solved（解决得快），所以是【状语】，句型骨干仍是【主谓宾 SVO】。'
-            },
-            {
-                id: 10,
-                pattern: 'SVO',
-                zh: '我每天早上喝一杯咖啡。',
-                en: 'I drink a cup of coffee every morning.',
-                alt: ['Every morning I drink a cup of coffee.'],
-                vocabHint: 'drink (喝), a cup of coffee (一杯咖啡), every morning (每天早上)',
-                chunks: [
-                    { text: 'I', role: 'S', cn: '我', detail: '主语' },
-                    { text: 'drink', role: 'V', cn: '喝', detail: '及物动词作谓语' },
-                    { text: 'a cup of coffee', role: 'O', cn: '一杯咖啡', detail: '名词短语作宾语' },
-                    { text: 'every morning', role: 'ADV', cn: '每天早上', detail: '时间状语（英语中时间状语通常放句尾）' }
-                ],
-                note: '汉语习惯把时间“每天早上”放在动词前（我每天早上喝...），而英语习惯先说核心骨干“主谓宾 (I drink a cup of coffee)”，再把时间状语放句尾。'
-            },
-            {
-                id: 11,
-                pattern: 'SVO',
-                zh: '我们应该保护自然环境。',
-                en: 'We should protect the natural environment.',
-                alt: [],
-                vocabHint: 'should protect (应该保护), natural environment (自然环境)',
-                chunks: [
-                    { text: 'We', role: 'S', cn: '我们', detail: '主语' },
-                    { text: 'should protect', role: 'V', cn: '应该保护', detail: '情态动词 + 动词原形共同构成复合谓语' },
-                    { text: 'the natural environment', role: 'O', cn: '自然环境', detail: '名词短语作宾语（natural 作定语）' }
-                ],
-                note: '情态动词（should / can / must）不能单独作谓语，必须与后面的实义动词原形合起来一起充当【谓语 V】。'
-            },
-            {
-                id: 12,
-                pattern: 'SVO',
-                zh: '他昨晚写了一封长信。',
-                en: 'He wrote a long letter last night.',
-                alt: [],
-                vocabHint: 'wrote (写，过去式), a long letter (一封长信), last night (昨晚)',
-                chunks: [
-                    { text: 'He', role: 'S', cn: '他', detail: '主语' },
-                    { text: 'wrote', role: 'V', cn: '写了', detail: '及物动词 write 的过去式作谓语' },
-                    { text: 'a long letter', role: 'O', cn: '一封长信', detail: '名词短语作宾语' },
-                    { text: 'last night', role: 'ADV', cn: '昨晚', detail: '时间状语' }
-                ],
-                note: '主干是 He wrote a long letter (主谓宾 SVO)，last night 为时间状语置于句末。'
-            },
+    const LEVEL_META = {
+      hs:    { name: '高中英语',     badge: 'bg-sky-100 text-sky-800 border border-sky-200' },
+      uni:   { name: '大学四六级',   badge: 'bg-indigo-100 text-indigo-800 border border-indigo-200' },
+      adult: { name: '自考成人本科', badge: 'bg-amber-100 text-amber-800 border border-amber-200' }
+    };
 
-            // --- SVP (主系表) ---
-            {
-                id: 13,
-                pattern: 'SVP',
-                zh: '她的声音听起来很甜美。',
-                en: 'Her voice sounds very sweet.',
-                alt: [],
-                vocabHint: 'voice (嗓音), sounds (听起来), sweet (甜美的)',
-                chunks: [
-                    { text: 'Her voice', role: 'S', cn: '她的声音', detail: '名词短语作主语' },
-                    { text: 'sounds', role: 'LV', cn: '听起来', detail: '感官系动词作谓语（第三人称单数）' },
-                    { text: 'very sweet', role: 'P', cn: '很甜美', detail: '形容词短语作表语，说明主语的特征' }
-                ],
-                note: 'sound / look / smell / taste / feel 属于【感官系动词】，后面必须接形容词（sweet）作【表语】，千万不能接副词 sweetly！'
-            },
-            {
-                id: 14,
-                pattern: 'SVP',
-                zh: '树叶在秋天变黄。',
-                en: 'Leaves turn yellow in autumn.',
-                alt: ['The leaves turn yellow in autumn.', 'Leaves turn yellow in fall.'],
-                vocabHint: 'leaves (树叶，复数), turn (变成，系动词), yellow (黄色的), in autumn (在秋天)',
-                chunks: [
-                    { text: 'Leaves', role: 'S', cn: '树叶', detail: '复数名词作主语' },
-                    { text: 'turn', role: 'LV', cn: '变成', detail: '变化类系动词' },
-                    { text: 'yellow', role: 'P', cn: '黄色的', detail: '形容词作表语，说明主语变化后的状态' },
-                    { text: 'in autumn', role: 'ADV', cn: '在秋天', detail: '时间状语' }
-                ],
-                note: 'turn / become / get / grow 表示“变得...”时是变化类系动词，后接形容词 yellow 作表语，构成【主系表 SVP】。'
-            },
-            {
-                id: 15,
-                pattern: 'SVP',
-                zh: '这个计划似乎很实用。',
-                en: 'This plan seems very practical.',
-                alt: ['The plan seems very practical.'],
-                vocabHint: 'plan (计划), seems (似乎/看来), practical (实用的)',
-                chunks: [
-                    { text: 'This plan', role: 'S', cn: '这个计划', detail: '名词短语作主语' },
-                    { text: 'seems', role: 'LV', cn: '似乎', detail: '表象系动词（第三人称单数）' },
-                    { text: 'very practical', role: 'P', cn: '很实用', detail: '形容词短语作表语' }
-                ],
-                note: 'seem / appear 是表象系动词，后接形容词作表语，属于标准的【主系表 SVP】句型。'
-            },
-            {
-                id: 16,
-                pattern: 'SVP',
-                zh: '他哥哥是一名优秀的医生。',
-                en: 'His brother is an excellent doctor.',
-                alt: [],
-                vocabHint: 'his brother (他哥哥), is (是), an excellent doctor (一名优秀的医生)',
-                chunks: [
-                    { text: 'His brother', role: 'S', cn: '他哥哥', detail: '名词短语作主语' },
-                    { text: 'is', role: 'LV', cn: '是', detail: 'be 动词作系动词' },
-                    { text: 'an excellent doctor', role: 'P', cn: '一名优秀的医生', detail: '名词短语作表语，说明主语的身份' }
-                ],
-                note: 'be 动词后的名词或形容词统称为【表语 Predicative】，不能叫宾语！因为它是用来等同或描述主语的。'
-            },
+    // ============================================================================
+    // 150道精选语法题库（高中50题 + 大学50题 + 自考成人本科50题，每句严格 3~10 词）
+    // 格式：[学段, 句型, 中文句意, "英文词块:成分:说明|...", 考纲解析]
+    // ============================================================================
+    const RAW_QUESTIONS = [
+      // ==================== 一、高中英语 (hs · 50题) ====================
+      // --- 高中 SV (10题) ---
+      ['hs','SV','太阳从东方升起。','The sun:S:主语|rises:V:谓语(不及物)|in the east:Adv:地点状语','客观真理使用一般现在时，rise 是不及物动词，后面不直接加宾语。'],
+      ['hs','SV','昨天发生了一起事故。','An accident:S:主语|happened:V:谓语(不及物)|yesterday:Adv:时间状语','happen 为高考必考不及物动词，没有被动语态。'],
+      ['hs','SV','小鸟在树上快乐地歌唱。','Birds:S:主语|sing:V:谓语|happily:Adv:方式状语|in the trees:Adv:地点状语','多个状语排列时，通常“方式状语”在前，“地点状语”在后。'],
+      ['hs','SV','刚才铃声响了。','The bell:S:主语|rang:V:谓语(不及物)|just now:Adv:时间状语','just now（刚才）标志一般过去时，ring 的过去式为 rang。'],
+      ['hs','SV','我们学校近年来发生了巨大变化。','Great changes:S:主语|have taken place:V:谓语|in our school:Adv:地点状语','take place（发生）是不及物动词短语，不可用被动语态。'],
+      ['hs','SV','火车准时到达了。','The train:S:主语|arrived:V:谓语(不及物)|on time:Adv:方式状语','arrive 为不及物动词，on time 意为“准时”作状语。'],
+      ['hs','SV','时光飞逝。','Time:S:主语|flies:V:谓语|quickly:Adv:方式状语','主谓结构搭配副词 quickly 修饰动词 flies。'],
+      ['hs','SV','昨晚雨下得很大。','It:S:主语|rained:V:谓语|heavily:Adv:方式状语|last night:Adv:时间状语','形容雨雪下得大常用副词 heavily 或 hard 作状语。'],
+      ['hs','SV','那个小女孩突然哭了起来。','The little girl:S:主语|cried:V:谓语|suddenly:Adv:方式状语','suddenly 是副词，修饰不及物动词 cried。'],
+      ['hs','SV','会议将在明天上午开始。','The meeting:S:主语|will begin:V:谓语|tomorrow morning:Adv:时间状语','will begin 构成一般将来时谓语，时间状语放在句尾。'],
 
-            // --- SV (主谓) ---
-            {
-                id: 17,
-                pattern: 'SV',
-                zh: '太阳从东方升起。',
-                en: 'The sun rises in the east.',
-                alt: [],
-                vocabHint: 'the sun (太阳), rises (升起，不及物动词), in the east (在东方)',
-                chunks: [
-                    { text: 'The sun', role: 'S', cn: '太阳', detail: '独一无二的事物前加 the，作主语' },
-                    { text: 'rises', role: 'V', cn: '升起', detail: '不及物动词作谓语（无需宾语）' },
-                    { text: 'in the east', role: 'ADV', cn: '从东方/在东方', detail: '介词短语作地点/方位状语' }
-                ],
-                note: 'rise 是不及物动词，后面不能直接加宾语。in the east 是介词短语作状语，去掉后核心骨干 The sun rises 依然完整，属于【主谓 SV】。'
-            },
-            {
-                id: 18,
-                pattern: 'SV',
-                zh: '时间过得飞快。',
-                en: 'Time flies quickly.',
-                alt: ['Time flies fast.'],
-                vocabHint: 'time (时间), flies (飞逝，fly的三单), quickly (飞快地)',
-                chunks: [
-                    { text: 'Time', role: 'S', cn: '时间', detail: '不可数名词作主语' },
-                    { text: 'flies', role: 'V', cn: '飞逝', detail: '不及物动词作谓语' },
-                    { text: 'quickly', role: 'ADV', cn: '飞快地', detail: '副词作方式状语，修饰动词 flies' }
-                ],
-                note: '极简而经典的【主谓 SV】句型：主语 Time + 不及物动词 flies + 方式状语 quickly。'
-            },
-            {
-                id: 19,
-                pattern: 'SV',
-                zh: '小鸟正在树上歌唱。',
-                en: 'Birds are singing in the tree.',
-                alt: ['The birds are singing in the tree.'],
-                vocabHint: 'birds (小鸟), are singing (正在歌唱), in the tree (在树上)',
-                chunks: [
-                    { text: 'Birds', role: 'S', cn: '小鸟', detail: '主语' },
-                    { text: 'are singing', role: 'V', cn: '正在歌唱', detail: '现在进行时（be + doing）整体作不及物谓语' },
-                    { text: 'in the tree', role: 'ADV', cn: '在树上', detail: '介词短语作地点状语' }
-                ],
-                note: '注意这里的 are singing 是现在进行时作【谓语 V】，不是主系表！外来物落在树上用 in the tree。'
-            },
-            {
-                id: 20,
-                pattern: 'SV',
-                zh: '那个婴儿刚才哭了。',
-                en: 'The baby cried just now.',
-                alt: [],
-                vocabHint: 'the baby (那个婴儿), cried (哭了，cry的过去式), just now (刚才)',
-                chunks: [
-                    { text: 'The baby', role: 'S', cn: '那个婴儿', detail: '名词短语作主语' },
-                    { text: 'cried', role: 'V', cn: '哭了', detail: '不及物动词作谓语' },
-                    { text: 'just now', role: 'ADV', cn: '刚才', detail: '时间状语' }
-                ],
-                note: 'cry 在此作不及物动词，不需要宾语，加上时间状语 just now 构成【主谓 SV】句型。'
-            }
-        ];
+      // --- 高中 SVP (10题) ---
+      ['hs','SVP','树叶在秋天变黄。','Leaves:S:主语|turn:V:系动词(变化)|yellow:P:表语|in autumn:Adv:时间状语','表示颜色变化常用系动词 turn，后接形容词 yellow 作表语。'],
+      ['hs','SVP','她的声音听起来很甜美。','Her voice:S:主语|sounds:V:感官系动词|very sweet:P:表语','sound 是感官系动词，后面必须接形容词 sweet 作表语，不能用副词。'],
+      ['hs','SVP','这个计划似乎很实用。','The plan:S:主语|seems:V:系动词|very practical:P:表语','seem（似乎）作系动词，后接形容词 practical 作表语。'],
+      ['hs','SVP','那牛奶已经变质了。','The milk:S:主语|has gone:V:系动词(变化)|bad:P:表语','食物变质变坏常用系动词 go + bad 构成主系表结构。'],
+      ['hs','SVP','我的梦想终于实现了。','My dream:S:主语|came:V:系动词|true:P:表语|finally:Adv:时间状语','come true（成为现实）中 come 是系动词，true 是形容词作表语。'],
+      ['hs','SVP','他听到这个消息后保持沉默。','He:S:主语|remained:V:系动词(保持)|silent:P:表语|after the news:Adv:时间状语','remain（保持）是高考常考系动词，后接形容词 silent 作表语。'],
+      ['hs','SVP','这道菜闻起来真香。','This dish:S:主语|smells:V:感官系动词|really delicious:P:表语','感官系动词 smell 无被动语态，后接形容词 delicious。'],
+      ['hs','SVP','冬季白天变得更短。','Days:S:主语|get:V:系动词(变化)|shorter:P:表语|in winter:Adv:时间状语','get + 形容词比较级 shorter 表示“变得越来越……”。'],
+      ['hs','SVP','锻炼对我们的健康有益。','Exercise:S:主语|is:V:系动词|good for our health:P:表语','be good for... 是高考核心短语，整体充当主系表中的表语。'],
+      ['hs','SVP','丝绸摸起来很柔软。','Silk:S:主语|feels:V:感官系动词|very soft:P:表语','feel 此处为感官系动词“摸起来”，用主动形式表被动含义。'],
 
-        // ============================================================================
-        // 3. STATE MANAGEMENT (WITH LOCALSTORAGE PERSISTENCE)
-        // ============================================================================
-        let allQuestions = [];
-        let filteredQuestions = [];
-        let currentFilter = 'ALL'; // 'ALL', 'SV', 'SVP', 'SVO', 'SVOO', 'SVOC', 'MISTAKES', 'FAVORITES'
-        let currentIndex = 0;
-        let inputMode = 'blocks'; // 'blocks' or 'typing'
-        let selectedWordIndices = [];
-        let currentScrambledWords = [];
-        let selectedPatternGuess = null; // Optional user guess for SV/SVP/SVO/SVOO/SVOC
+      // --- 高中 SVO (10题) ---
+      ['hs','SVO','我每天早上背英语单词。','I:S:主语|memorize:V:谓语|English words:O:宾语|every morning:Adv:时间状语','汉语说“每天早上背单词”，英语要把时间状语 every morning 放句尾。'],
+      ['hs','SVO','她迅速解决了这个难题。','She:S:主语|solved:V:谓语|the difficult problem:O:宾语|quickly:Adv:方式状语','切勿把副词 quickly 插在动词 solved 和宾语之间。'],
+      ['hs','SVO','规律的锻炼能改善你的健康。','Regular exercise:S:主语|can improve:V:复合谓语|your health:O:宾语','情态动词 can + 动词原形 improve 共同作谓语。'],
+      ['hs','SVO','我们应该保护野生动物。','We:S:主语|should protect:V:复合谓语|wild animals:O:宾语','should protect 为复合谓语，wild animals 为宾语。'],
+      ['hs','SVO','他昨天放弃了那个机会。','He:S:主语|gave up:V:谓语短语|that chance:O:宾语|yesterday:Adv:时间状语','give up 是及物动词短语，相当于一个及物动词，后接宾语。'],
+      ['hs','SVO','许多青少年喜欢流行音乐。','Many teenagers:S:主语|enjoy:V:谓语|pop music:O:宾语','enjoy 是及物动词，直接接名词短语 pop music 作宾语。'],
+      ['hs','SVO','他们昨晚讨论了旅行计划。','They:S:主语|discussed:V:谓语|the travel plan:O:宾语|last night:Adv:时间状语','易错点：discuss 是及物动词，后面直接加宾语，不能加 about！'],
+      ['hs','SVO','那场大雨毁掉了我们的野餐。','The heavy rain:S:主语|ruined:V:谓语|our picnic:O:宾语','ruin（毁坏）作及物动词，构成标准主谓宾结构。'],
+      ['hs','SVO','她在比赛中赢得了一等奖。','She:S:主语|won:V:谓语|the first prize:O:宾语|in the competition:Adv:地点状语','win 后面接比赛奖项或名次作宾语。'],
+      ['hs','SVO','志愿者们昨天打扫了城市公园。','Volunteers:S:主语|cleaned:V:谓语|the city park:O:宾语|yesterday:Adv:时间状语','标准 SVO + 时间状语结构。'],
 
-        let solvedIds = new Set();
-        let mistakeIds = new Set();
-        let favoriteIds = new Set();
-        let currentStreak = 0;
+      // --- 高中 SVOO (10题) ---
+      ['hs','SVOO','妈妈给我做了一个生日蛋糕。','Mom:S:主语|made:V:谓语|me:IO:间接宾语(人)|a birthday cake:DO:直接宾语(物)','make sb. sth. 是双宾语结构，me 与 cake 不是同一个事物。'],
+      ['hs','SVOO','王老师教我们英语语法。','Mr. Wang:S:主语|teaches:V:谓语|us:IO:间接宾语(人)|English grammar:DO:直接宾语(物)','teach + 人(间宾) + 学科(直宾) 是典型的主谓双宾句型。'],
+      ['hs','SVOO','请把盐递给我。','Please:Adv:语气词|pass:V:谓语|me:IO:间接宾语(人)|the salt:DO:直接宾语(物)','祈使句省略了主语 you，pass sb. sth. 为双宾语结构。'],
+      ['hs','SVOO','他借给了我一本有趣的书。','He:S:主语|lent:V:谓语|me:IO:间接宾语(人)|an interesting book:DO:直接宾语(物)','lend sb. sth.（把某物借给某人），过去式为 lent。'],
+      ['hs','SVOO','她给我看了一些老照片。','She:S:主语|showed:V:谓语|me:IO:间接宾语(人)|some old photos:DO:直接宾语(物)','show + 间接宾语(人) + 直接宾语(物)。'],
+      ['hs','SVOO','奶奶经常给我们讲有趣的故事。','Grandma:S:主语|often:Adv:频度状语|tells:V:谓语|us:IO:间接宾语|funny stories:DO:直接宾语','频度副词 often 通常放在实义动词 tells 之前。'],
+      ['hs','SVOO','我爸爸给我买了一辆新自行车。','My father:S:主语|bought:V:谓语|me:IO:间接宾语(人)|a new bike:DO:直接宾语(物)','buy sb. sth. = buy sth. for sb.，属于主谓双宾。'],
+      ['hs','SVOO','那个男孩问了老师一个问题。','The boy:S:主语|asked:V:谓语|the teacher:IO:间接宾语|a question:DO:直接宾语','ask sb. sth. 后面接双宾语。'],
+      ['hs','SVOO','她昨晚给我发了一封电子邮件。','She:S:主语|sent:V:谓语|me:IO:间接宾语|an email:DO:直接宾语|last night:Adv:时间状语','send sb. sth. 是高频双宾语结构，时间状语置后。'],
+      ['hs','SVOO','太阳给我们提供光和热。','The sun:S:主语|gives:V:谓语|us:IO:间接宾语|light and heat:DO:直接宾语','give 是最核心的双宾语动词。'],
 
-        // ============================================================================
-        // 4. INITIALIZATION
-        // ============================================================================
-        function initApp() {
-            // Load persisted state
-            const savedCustom = safeParseJSON('syntaxlab_custom_questions', []);
-            const savedSolved = safeParseJSON('syntaxlab_solved_ids', []);
-            const savedMistakes = safeParseJSON('syntaxlab_mistake_ids', []);
-            const savedFavorites = safeParseJSON('syntaxlab_favorite_ids', []);
+      // --- 高中 SVOC (10题) ---
+      ['hs','SVOC','这个好消息让我们非常开心。','The good news:S:主语|made:V:谓语|us:O:宾语|very happy:C:宾语补足语','us 与 very happy 构成“我们很开心”的逻辑关系，形容词作宾补。'],
+      ['hs','SVOC','我们选他当班长。','We:S:主语|elected:V:谓语|him:O:宾语|our monitor:C:宾语补足语','him 就是 our monitor（逻辑等号），名词短语作宾语补足语。'],
+      ['hs','SVOC','良好的习惯使我们保持健康。','Good habits:S:主语|keep:V:谓语|us:O:宾语|healthy:C:宾语补足语','keep + 宾语 + 形容词(healthy) 作宾语补足语。'],
+      ['hs','SVOC','我发现这本书很容易懂。','I:S:主语|found:V:谓语|this book:O:宾语|very easy:C:宾语补足语','find + 宾语 + 形容词作宾补，说明宾语 this book 的特征。'],
+      ['hs','SVOC','老师鼓励我们努力学习。','The teacher:S:主语|encourages:V:谓语|us:O:宾语|to study hard:C:宾语补足语','encourage sb. to do sth. 中，不定式 to study hard 作宾补。'],
+      ['hs','SVOC','我父母不允许我熬夜。','My parents:S:主语|never:Adv:状语|allow:V:谓语|me:O:宾语|to stay up:C:宾语补足语','allow sb. to do sth.，不定式作宾语 me 的补足语。'],
+      ['hs','SVOC','我刚才听见有人在敲门。','I:S:主语|heard:V:感官动词|someone:O:宾语|knocking at the door:C:宾语补足语','hear sb. doing sth.，现在分词作宾补表示动作正在进行。'],
+      ['hs','SVOC','请保持教室干净整洁。','Please:Adv:语气词|keep:V:谓语|the classroom:O:宾语|clean and tidy:C:宾语补足语','clean and tidy 是形容词短语，补充说明宾语 classroom 的状态。'],
+      ['hs','SVOC','他们给那个宝宝取名为莉莉。','They:S:主语|named:V:谓语|the baby:O:宾语|Lily:C:宾语补足语','name sb. + 名字，专有名词 Lily 作宾语补足语。'],
+      ['hs','SVOC','噪音使我无法入睡。','The noise:S:主语|kept:V:谓语|me:O:宾语|awake:C:宾语补足语|all night:Adv:时间状语','表语形容词 awake 作宾语 me 的补足语。'],
 
-            solvedIds = new Set(savedSolved);
-            mistakeIds = new Set(savedMistakes);
-            favoriteIds = new Set(savedFavorites);
+      // ==================== 二、大学四六级 (uni · 50题) ====================
+      // --- 大学 SV (10题) ---
+      ['uni','SV','经济正在稳步复苏。','The economy:S:主语|is recovering:V:谓语(进行时)|steadily:Adv:方式状语','recover 作“复苏、恢复”讲时为不及物动词，搭配副词 steadily。'],
+      ['uni','SV','公众意识在过去十年中显著提高。','Public awareness:S:主语|has increased:V:谓语|significantly:Adv:程度状语','四六级写作高频句：主语 + increase/grow + significantly/dramatically。'],
+      ['uni','SV','不同文化之间的观念存在差异。','Opinions:S:主语|vary:V:谓语(不及物)|across cultures:Adv:范围状语','vary（相异、变化）是四六级核心不及物动词。'],
+      ['uni','SV','新政策将于下月生效。','The new policy:S:主语|will take effect:V:谓语短语|next month:Adv:时间状语','take effect（生效）是不及物短语，无被动语态。'],
+      ['uni','SV','许多传统习俗正在逐渐消失。','Many traditional customs:S:主语|are disappearing:V:谓语|gradually:Adv:方式状语','disappear（消失）为不及物动词，不可用于被动语态。'],
+      ['uni','SV','双方昨天进行了激烈的辩论。','Fierce debates:S:主语|arose:V:谓语(不及物)|between both sides:Adv:状语','arise（出现、产生，过去式 arose）是四六级高频不及物动词。'],
+      ['uni','SV','科技在现代社会中蓬勃发展。','Technology:S:主语|flourishes:V:谓语(不及物)|in modern society:Adv:地点状语','flourish（繁荣、蓬勃发展）是不及物动词。'],
+      ['uni','SV','消费趋势随季节而波动。','Consumption trends:S:主语|fluctuate:V:谓语(不及物)|with the seasons:Adv:伴随状语','图表作文核心词 fluctuate（波动）为不及物动词。'],
+      ['uni','SV','各部门通力合作以确保成功。','All departments:S:主语|cooperated:V:谓语(不及物)|closely:Adv:方式状语','cooperate（合作）为不及物动词，搭配副词 closely。'],
+      ['uni','SV','那次实验最终以失败告终。','The experiment:S:主语|ended:V:谓语(不及物)|in failure:Adv:结果状语','end in failure（以失败告终）是主谓+介词短语状语结构。'],
 
-            allQuestions = [...DEFAULT_QUESTIONS, ...savedCustom];
-            filteredQuestions = [...allQuestions];
+      // --- 大学 SVP (10题) ---
+      ['uni','SVP','他的理论在实践中证明是正确的。','His theory:S:主语|proved:V:系动词|accurate:P:表语|in practice:Adv:状语','prove 作“证明是、结果是”讲时是系动词，直接接形容词 accurate。'],
+      ['uni','SVP','环境污染已成为一个全球性挑战。','Environmental pollution:S:主语|has become:V:系动词|a global challenge:P:表语','名词短语 a global challenge 充当系动词 has become 的表语。'],
+      ['uni','SVP','这项研究结果似乎自相矛盾。','The research findings:S:主语|appear:V:系动词|contradictory:P:表语','appear 作系动词（显得、似乎），后接形容词 contradictory。'],
+      ['uni','SVP','人工智能对经济增长至关重要。','Artificial intelligence:S:主语|is:V:系动词|vital to economic growth:P:表语','be vital to...（对……至关重要）是四六级写作满分表语结构。'],
+      ['uni','SVP','在危机期间，股市依然动荡不安。','The stock market:S:主语|remained:V:系动词|unstable:P:表语|during the crisis:Adv:时间状语','remain + 形容词 unstable（不稳定的）构成主系表。'],
+      ['uni','SVP','自然资源并非取之不尽。','Natural resources:S:主语|are not:V:系动词|inexhaustible:P:表语','inexhaustible（取之不尽的）是形容词作表语。'],
+      ['uni','SVP','他的解释听起来颇有说服力。','His explanation:S:主语|sounds:V:感官系动词|quite convincing:P:表语','convincing（令人信服的）为形容词作表语。'],
+      ['uni','SVP','网络安全问题正变得日益紧迫。','Cybersecurity issues:S:主语|are growing:V:系动词(变化)|increasingly urgent:P:表语','grow 在此为变化系动词，接形容词 urgent 作表语。'],
+      ['uni','SVP','消费者对价格变化依然十分敏感。','Consumers:S:主语|stay:V:系动词(保持)|sensitive to price changes:P:表语','stay 作系动词意为“保持”，后接形容词短语作表语。'],
+      ['uni','SVP','那场谈判的结果令人失望。','The outcome:S:主语|turned out:V:系动词短语|disappointing:P:表语','turn out（结果是）作系动词短语，后接形容词 disappointing。'],
 
-            renderPatternFilters();
-            updateStatsUI();
-            loadQuestion(0);
+      // --- 大学 SVO (10题) ---
+      ['uni','SVO','创新推动社会可持续进步。','Innovation:S:主语|drives:V:谓语|sustainable social progress:O:宾语','drive（推动、驱动）在四六级写作中常代替 make，接名词短语作宾语。'],
+      ['uni','SVO','政府已经采取了果断措施。','The government:S:主语|has taken:V:谓语|decisive measures:O:宾语','take decisive/effective measures 是四六级必背主谓宾搭配。'],
+      ['uni','SVO','社交媒体深刻影响着人际沟通。','Social media:S:主语|profoundly:Adv:程度状语|influences:V:谓语|human communication:O:宾语','程度副词 profoundly 可放在实义动词 influences 之前。'],
+      ['uni','SVO','该委员会昨天批准了预算提案。','The committee:S:主语|approved:V:谓语|the budget proposal:O:宾语|yesterday:Adv:时间状语','approve 作“批准”讲时是及物动词，直接接宾语。'],
+      ['uni','SVO','批判性思维能增强解决问题的能力。','Critical thinking:S:主语|enhances:V:谓语|problem-solving skills:O:宾语','enhance（增强、提高）是四六级高频及物动词。'],
+      ['uni','SVO','长期缺乏睡眠会损害记忆力。','Chronic sleep deprivation:S:主语|impairs:V:谓语|memory:O:宾语','impair（损害、削弱）接宾语 memory，句式简洁地道。'],
+      ['uni','SVO','可再生能源减少了碳排放。','Renewable energy:S:主语|reduces:V:谓语|carbon emissions:O:宾语','reduce carbon emissions 是环保话题核心主谓宾短语。'],
+      ['uni','SVO','阅读经典文学作品能拓宽我们的视野。','Reading classics:S:动名词主语|broadens:V:谓语|our horizons:O:宾语','动名词短语 Reading classics 作主语，谓语用单数 broadens。'],
+      ['uni','SVO','科学家们发现了一种潜在的疗法。','Scientists:S:主语|discovered:V:谓语|a potential cure:O:宾语','discover（发现）接名词短语作宾语。'],
+      ['uni','SVO','过度使用手机会分散学生的注意力。','Excessive phone use:S:主语|distracts:V:谓语|students:O:宾语|easily:Adv:方式状语','distract sb.（使某人分心）是及物动词，副词置后。'],
 
-            // Global Keyboard Shortcuts
-            window.addEventListener('keydown', (e) => {
-                // Ignore if modal is open
-                if (!document.getElementById('customModal').classList.contains('hidden') ||
-                    !document.getElementById('shareModal').classList.contains('hidden') ||
-                    !document.getElementById('legendModal').classList.contains('hidden')) {
-                    return;
-                }
+      // --- 大学 SVOO (10题) ---
+      ['uni','SVOO','评审团授予了那位科学家最高荣誉。','The jury:S:主语|awarded:V:谓语|the scientist:IO:间接宾语|the highest honor:DO:直接宾语','award sb. sth.（授予某人某物）是四六级核心双宾语结构。'],
+      ['uni','SVOO','这门课程为学生提供了宝贵的实践经验。','This course:S:主语|offers:V:谓语|students:IO:间接宾语|valuable practical experience:DO:直接宾语','offer sb. sth. 接双宾语，比 provide 更简洁。'],
+      ['uni','SVOO','政府给予了小企业税收优惠。','The government:S:主语|granted:V:谓语|small businesses:IO:间接宾语|tax benefits:DO:直接宾语','grant sb. sth.（准予/给予某人某物）是正式文体双宾动词。'],
+      ['uni','SVOO','他的坦诚赢得了同事们的高度尊重。','His honesty:S:主语|earned:V:谓语|him:IO:间接宾语|great respect:DO:直接宾语','earn sb. sth.（为某人赢得某物）是四六级高分双宾用法。'],
+      ['uni','SVOO','那个错误的决定让他们付出了惨重代价。','That wrong decision:S:主语|cost:V:谓语|them:IO:间接宾语|a heavy price:DO:直接宾语','cost sb. sth.（使某人付出/花费……），cost 过去式仍为 cost。'],
+      ['uni','SVOO','数字技术给现代教育带来了巨大便利。','Digital technology:S:主语|brings:V:谓语|modern education:IO:间接宾语|great convenience:DO:直接宾语','bring sb./sth. sth. 是经典的四六级写作句型。'],
+      ['uni','SVOO','导师给我推荐了几篇学术论文。','My tutor:S:主语|recommended:V:谓语|me:IO:间接宾语|several academic papers:DO:直接宾语','recommend 作双宾动词时可接“人 + 物”。'],
+      ['uni','SVOO','银行拒绝向那家公司提供进一步贷款。','The bank:S:主语|denied:V:谓语|the company:IO:间接宾语|further loans:DO:直接宾语','deny sb. sth.（拒绝给某人某物）是六级常考双宾语结构。'],
+      ['uni','SVOO','这项新发明为我们节省了大量时间。','This new invention:S:主语|saves:V:谓语|us:IO:间接宾语|plenty of time:DO:直接宾语','save sb. sth.（为某人省去某物）属于主谓双宾句型。'],
+      ['uni','SVOO','历史给我们留下了许多深刻的教训。','History:S:主语|leaves:V:谓语|us:IO:间接宾语|many profound lessons:DO:直接宾语','leave sb. sth.（给某人留下某物）构成双宾语。'],
 
-                if (inputMode === 'typing') {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        checkAnswer();
-                    }
-                    return;
-                }
+      // --- 大学 SVOC (10题) ---
+      ['uni','SVOC','专家们认为这项改革十分必要。','Experts:S:主语|consider:V:谓语|this reform:O:宾语|essential:C:宾语补足语','consider + 宾语 + 形容词(essential) 作宾补，to be 可省略。'],
+      ['uni','SVOC','现代科技使远程办公成为可能。','Modern technology:S:主语|makes:V:谓语|remote work:O:宾语|possible:C:宾语补足语','make + 名词宾语 + 形容词 possible 是四六级写作黄金句型。'],
+      ['uni','SVOC','高速互联网让人们随时保持联系。','High-speed internet:S:主语|keeps:V:谓语|people:O:宾语|connected:C:宾语补足语(过去分词)','过去分词 connected 作宾补，表示被动或状态。'],
+      ['uni','SVOC','奖学金使贫困学生能够完成学业。','Scholarships:S:主语|enable:V:谓语|poor students:O:宾语|to finish college:C:宾语补足语','enable sb. to do sth.（使某人能够做某事），不定式作宾补。'],
+      ['uni','SVOC','恶劣的天气迫使航班推迟。','Severe weather:S:主语|forced:V:谓语|the flight:O:宾语|to be delayed:C:宾语补足语','force sb./sth. to do sth.，不定式作宾语补足语。'],
+      ['uni','SVOC','大多数公民视教育为一项基本权利。','Most citizens:S:主语|regard:V:谓语|education:O:宾语|as a basic right:C:宾语补足语','regard/view + O + as C 中，介词短语 as a basic right 作宾补。'],
+      ['uni','SVOC','那场经济危机使数千人失业。','The economic crisis:S:主语|left:V:谓语|thousands of people:O:宾语|jobless:C:宾语补足语','leave + 宾语 + 形容词(jobless) 表示“使某人处于某种状态”。'],
+      ['uni','SVOC','最新证据证明那名嫌疑人是无辜的。','New evidence:S:主语|proved:V:谓语|the suspect:O:宾语|innocent:C:宾语补足语','prove + 宾语 + 形容词宾补，意为“证明某人是……的”。'],
+      ['uni','SVOC','严格的法律促使司机们更加谨慎。','Strict laws:S:主语|make:V:谓语|drivers:O:宾语|more cautious:C:宾语补足语','形容词比较级 more cautious 补充说明宾语 drivers。'],
+      ['uni','SVOC','我们发现他的分析非常有洞察力。','We:S:主语|found:V:谓语|his analysis:O:宾语|very insightful:C:宾语补足语','find + 宾语 + 形容词(insightful) 作宾补。'],
 
-                // Word Blocks Mode Shortcuts: 1-9 to select words, Backspace to undo, Enter to submit
-                if (e.key >= '1' && e.key <= '9') {
-                    const idx = parseInt(e.key, 10) - 1;
-                    if (idx < currentScrambledWords.length && !selectedWordIndices.includes(idx)) {
-                        selectWordFromBank(idx);
-                    }
-                } else if (e.key === 'Backspace' && selectedWordIndices.length > 0) {
-                    e.preventDefault();
-                    removeSelectedWord(selectedWordIndices.length - 1);
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    checkAnswer();
-                }
-            });
+      // ==================== 三、自考成人本科 (adult · 50题) ====================
+      // --- 自考成人本科 SV (10题) ---
+      ['adult','SV','成功源于不懈的努力。','Success:S:主语|results:V:谓语(不及物)|from constant effort:Adv:原因状语','自考英语(二)必考搭配：result from（起因于/源于），result 是不及物动词。'],
+      ['adult','SV','理论必须与实践相结合。','Theory:S:主语|must combine:V:谓语(不及物)|with practice:Adv:伴随状语','combine with...（与……结合）常考主谓+介词短语结构。'],
+      ['adult','SV','总成本取决于原材料价格。','The total cost:S:主语|depends:V:谓语(不及物)|on material prices:Adv:状语','depend on（取决于）是成人本科学位英语最高频短语，无被动语态。'],
+      ['adult','SV','那座古庙矗立在山顶上。','The ancient temple:S:主语|stands:V:谓语(不及物)|on the hill:Adv:地点状语','stand 表示建筑物“位于、矗立”，属于典型主谓结构。'],
+      ['adult','SV','通货膨胀率在上季度有所下降。','Inflation rates:S:主语|declined:V:谓语(不及物)|last quarter:Adv:时间状语','decline（下降）为不及物动词，后接时间状语 last quarter。'],
+      ['adult','SV','她很快适应了新的工作环境。','She:S:主语|adapted:V:谓语(不及物)|quickly:Adv:方式状语|to the new environment:Adv:状语','adapt to（适应）中 adapt 是不及物动词，学位英语常考词。'],
+      ['adult','SV','这些产品在质量上差别很大。','These products:S:主语|differ:V:谓语(不及物)|greatly:Adv:程度状语|in quality:Adv:方面状语','differ in...（在……方面不同）是自考汉译英必考句式。'],
+      ['adult','SV','掌声在大厅里持续了好几分钟。','The applause:S:主语|lasted:V:谓语(不及物)|for several minutes:Adv:时间状语','last 作动词意为“持续”，是不及物动词，没有被动语态。'],
+      ['adult','SV','所有的努力最终都会有回报。','All hard work:S:主语|will pay off:V:谓语短语|eventually:Adv:时间状语','pay off（取得成功/得到回报）是自考完形与翻译高频不及物短语。'],
+      ['adult','SV','事故发生在十字路口附近。','The accident:S:主语|occurred:V:谓语(不及物)|near the crossing:Adv:地点状语','occur（发生，过去式 occurred）同 happen 一样不能用被动语态。'],
+
+      // --- 自考成人本科 SVP (10题) ---
+      ['adult','SVP','终身学习在信息时代至关重要。','Lifelong learning:S:主语|is:V:系动词|essential:P:表语|in the information age:Adv:时间状语','自考英语(二)作文首段万能主系表句型。'],
+      ['adult','SVP','每个成年人都应对自己的行为负责。','Every adult:S:主语|is:V:系动词|responsible for their actions:P:表语','be responsible for...（对……负责）是自考汉译英真题高频考点。'],
+      ['adult','SVP','他的建议证明非常有效。','His suggestion:S:主语|proved:V:系动词|highly effective:P:表语','prove 作系动词用主动表被动，后接形容词 effective 作表语。'],
+      ['adult','SVP','水资源短缺正变得越来越严重。','Water shortage:S:主语|is becoming:V:系动词|increasingly serious:P:表语','become + 形容词表示状态变化，increasingly 修饰形容词 serious。'],
+      ['adult','SVP','这位候选人完全能胜任这项工作。','The candidate:S:主语|is:V:系动词|fully qualified for the job:P:表语','be qualified for（胜任/有资格做）是成人学位英语核心表语短语。'],
+      ['adult','SVP','在紧急情况下请保持冷静。','Please:Adv:语气词|remain:V:系动词|calm:P:表语|in an emergency:Adv:地点/条件状语','remain calm（保持冷静）是主系表结构，in an emergency 作状语。'],
+      ['adult','SVP','这项新技术与现有系统兼容。','This new technology:S:主语|is:V:系动词|compatible with existing systems:P:表语','be compatible with（与……兼容）充当表语。'],
+      ['adult','SVP','健康饮食对预防疾病很有益处。','A healthy diet:S:主语|is:V:系动词|beneficial to disease prevention:P:表语','be beneficial to...（对……有益）比 be good for 更符合自考书面语得分点。'],
+      ['adult','SVP','她对目前的薪水感到相当满意。','She:S:主语|feels:V:感官系动词|content with her current salary:P:表语','feel content/satisfied with（对……感到满意）构成主系表。'],
+      ['adult','SVP','良好的沟通技巧是职场成功的关键。','Good communication skills:S:主语|are:V:系动词|key to career success:P:表语','主语核心词是复数 skills，系动词用 are，key to... 作表语。'],
+
+      // --- 自考成人本科 SVO (10题) ---
+      ['adult','SVO','我们必须高度重视环境保护。','We:S:主语|must attach:V:谓语|great importance:O:宾语|to environmental protection:Adv:状语','attach great importance to（高度重视）是自考英语(二)必背满分翻译句型！'],
+      ['adult','SVO','均衡的饮食有助于保持充沛精力。','A balanced diet:S:主语|maintains:V:谓语|abundant energy:O:宾语','maintain（维持、保持）是及物动词，后接名词短语作宾语。'],
+      ['adult','SVO','他成功克服了许多困难。','He:S:主语|successfully:Adv:方式状语|overcame:V:谓语|numerous difficulties:O:宾语','overcome difficulties（克服困难，过去式 overcame）是成人本科必考搭配。'],
+      ['adult','SVO','董事会推迟了原定的会议。','The board:S:主语|postponed:V:谓语|the scheduled meeting:O:宾语','postpone（推迟 = put off）是学位英语词汇题与翻译题高频及物动词。'],
+      ['adult','SVO','继续教育能提升职业竞争力。','Continuing education:S:主语|improves:V:谓语|career competitiveness:O:宾语','贴合成人本科与继续教育主题的标准 SVO 句式。'],
+      ['adult','SVO','我非常感激你的及时帮助。','I:S:主语|deeply:Adv:程度状语|appreciate:V:谓语|your timely help:O:宾语','自考应用文写作必背句：appreciate 后直接接事/物作宾语，不可接人。'],
+      ['adult','SVO','政府去年取消了那项过时的规定。','The government:S:主语|abolished:V:谓语|that outdated regulation:O:宾语|last year:Adv:时间状语','abolish（废除、取消）是及物动词，时间状语 last year 置后。'],
+      ['adult','SVO','丰富的经验弥补了他学历上的不足。','Rich experience:S:主语|makes up for:V:谓语短语|his lack of degrees:O:宾语','make up for（弥补）相当于及物动词，后接名词短语作宾语。'],
+      ['adult','SVO','双方昨天签署了一份正式合同。','Both parties:S:主语|signed:V:谓语|a formal contract:O:宾语|yesterday:Adv:时间状语','商务与自考常用表达：sign a formal contract（签署正式合同）。'],
+      ['adult','SVO','经常锻炼能有效缓解工作压力。','Regular exercise:S:主语|effectively:Adv:方式状语|relieves:V:谓语|work stress:O:宾语','relieve stress/pressure（缓解压力）是自考作文高频主谓宾搭配。'],
+
+      // --- 自考成人本科 SVOO (10题) ---
+      ['adult','SVOO','这所大学授予了他学士学位。','The university:S:主语|awarded:V:谓语|him:IO:间接宾语(人)|a bachelor degree:DO:直接宾语(物)','成人本科核心表达：award sb. a bachelor degree（授予某人学士学位）。'],
+      ['adult','SVOO','经理给了新员工详细的指导。','The manager:S:主语|gave:V:谓语|new employees:IO:间接宾语|detailed instructions:DO:直接宾语','give + 间接宾语(人) + 直接宾语(物)。'],
+      ['adult','SVOO','在线课程为成年人提供了灵活的学习机会。','Online courses:S:主语|offer:V:谓语|adults:IO:间接宾语|flexible learning opportunities:DO:直接宾语','offer sb. sth. 在自考议论文中极其实用。'],
+      ['adult','SVOO','客户昨天给我们发了一份紧急订单。','The client:S:主语|sent:V:谓语|us:IO:间接宾语|an urgent order:DO:直接宾语|yesterday:Adv:时间状语','send sb. sth. 接双宾语，时间状语 yesterday 放句末。'],
+      ['adult','SVOO','这次培训教了我们实用的管理技能。','This training:S:主语|taught:V:谓语|us:IO:间接宾语|practical management skills:DO:直接宾语','teach sb. sth.（教某人某事，过去式 taught）构成主谓双宾。'],
+      ['adult','SVOO','房东借给了那个年轻人一笔钱。','The landlord:S:主语|lent:V:谓语|the young man:IO:间接宾语|some money:DO:直接宾语','lend sb. sth. 为双宾语结构。'],
+      ['adult','SVOO','公司承诺给优秀员工丰厚的奖金。','The company:S:主语|promised:V:谓语|excellent staff:IO:间接宾语|generous bonuses:DO:直接宾语','promise sb. sth.（承诺给某人某物）是高频双宾结构。'],
+      ['adult','SVOO','请把最新的销售报告拿给我看。','Please:Adv:语气词|show:V:谓语|me:IO:间接宾语|the latest sales report:DO:直接宾语','祈使句中的双宾结构：show + 人(IO) + 物(DO)。'],
+      ['adult','SVOO','那次失败给了我一个宝贵的教训。','That failure:S:主语|taught:V:谓语|me:IO:间接宾语|a valuable lesson:DO:直接宾语','汉译英常考句：teach sb. a lesson（给某人一个教训）。'],
+      ['adult','SVOO','自动驾驶技术为司机省去了许多精力。','Self-driving technology:S:主语|saves:V:谓语|drivers:IO:间接宾语|much effort:DO:直接宾语','save sb. sth.（为某人省去……）接双宾语。'],
+
+      // --- 自考成人本科 SVOC (10题) ---
+      ['adult','SVOC','良好的时间管理使工作更加高效。','Good time management:S:主语|makes:V:谓语|work:O:宾语|more efficient:C:宾语补足语','make + 宾语 + 形容词(more efficient) 作宾补，自考写作高频句。'],
+      ['adult','SVOC','我们应该把终身学习当作一种习惯。','We:S:主语|should make:V:复合谓语|lifelong learning:O:宾语|a habit:C:宾语补足语','make + 宾语 + 名词(a habit) 作宾语补足语。'],
+      ['adult','SVOC','专业技能帮助求职者保持竞争力。','Professional skills:S:主语|keep:V:谓语|job seekers:O:宾语|competitive:C:宾语补足语','keep + 宾语 + 形容词 competitive（有竞争力的）作宾补。'],
+      ['adult','SVOC','医生建议他立即戒烟。','The doctor:S:主语|advised:V:谓语|him:O:宾语|to quit smoking:C:宾语补足语','advise sb. to do sth. 是学位英语必考句型，不定式作宾补。'],
+      ['adult','SVOC','互联网使人们能够方便地获取信息。','The internet:S:主语|enables:V:谓语|people:O:宾语|to access information easily:C:宾语补足语','enable sb. to do sth.（使某人能够做某事）是汉译英必考句型。'],
+      ['adult','SVOC','经理任命她为新项目的负责人。','The manager:S:主语|appointed:V:谓语|her:O:宾语|leader of the project:C:宾语补足语','appoint sb. + 职位名称，表示职位的单数名词前常省略冠词，作宾补。'],
+      ['adult','SVOC','许多成年学生发现自考很有挑战性。','Many adult students:S:主语|find:V:谓语|self-taught exams:O:宾语|challenging:C:宾语补足语','find + 宾语 + 形容词 challenging（有挑战性的）作宾补。'],
+      ['adult','SVOC','他的话让我重新思考自己的职业规划。','His words:S:主语|made:V:使役动词|me:O:宾语|rethink my career plan:C:宾语补足语','使役动词 make + 宾语 + 动词原形（不带 to 的不定式）作宾补。'],
+      ['adult','SVOC','突发疾病使那个项目处于未完成状态。','Sudden illness:S:主语|left:V:谓语|the project:O:宾语|unfinished:C:宾语补足语','leave + 宾语 + 过去分词 unfinished 作宾补。'],
+      ['adult','SVOC','法律要求所有公民依法纳税。','The law:S:主语|requires:V:谓语|all citizens:O:宾语|to pay taxes:C:宾语补足语','require sb. to do sth.，不定式 to pay taxes 作宾语补足语。']
+    ];
+
+    // 将压缩题库解析为标准对象
+    function parseSpec(specStr) {
+      return specStr.split('|').map(chunk => {
+        const [text, role, label] = chunk.split(':');
+        return { text: text.trim(), role: (role || 'S').trim(), label: (label || '').trim() };
+      });
+    }
+
+    function buildQuestionObj(tuple, idx) {
+      const [level, pattern, cn, spec, tip] = tuple;
+      const parts = parseSpec(spec);
+      const en = parts.map(p => p.text).join(' ');
+      const words = en.split(/\s+/).filter(Boolean);
+      return {
+        id: 'q_' + (idx + 1),
+        level,
+        pattern,
+        cn,
+        en,
+        words,
+        parts,
+        tip
+      };
+    }
+
+    // 状态管理与本地存储
+    const STORAGE_KEY = 'grammar_trainer_v3_state';
+    let state = {
+      levelFilter: 'ALL',     // 'ALL' | 'hs' | 'uni' | 'adult'
+      patternFilter: 'ALL',   // 'ALL' | 'SV' | 'SVP' | 'SVO' | 'SVOO' | 'SVOC' | 'MISTAKE' | 'FAV'
+      inputMode: 'blocks',    // 'blocks' | 'typing'
+      currentIndex: 0,
+      solvedIds: [],
+      mistakeIds: [],
+      favIds: [],
+      customQuestions: [],
+      streak: 0
+    };
+
+    let allQuestions = [];
+    let filteredQuestions = [];
+    let currentBankWords = [];     // [{ word, origIdx, used }]
+    let selectedWordIndices = [];  // [bankIdx, ...]
+    let currentPatternGuess = null;
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...state, ...parsed };
         }
+      } catch (e) {}
+    }
 
-        function safeParseJSON(key, fallback) {
-            try {
-                const raw = localStorage.getItem(key);
-                return raw ? JSON.parse(raw) : fallback;
-            } catch (e) {
-                return fallback;
-            }
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          levelFilter: state.levelFilter,
+          patternFilter: state.patternFilter,
+          inputMode: state.inputMode,
+          solvedIds: state.solvedIds,
+          mistakeIds: state.mistakeIds,
+          favIds: state.favIds,
+          customQuestions: state.customQuestions,
+          streak: state.streak
+        }));
+      } catch (e) {}
+    }
+
+    function rebuildAllQuestions() {
+      const base = RAW_QUESTIONS.map((t, i) => buildQuestionObj(t, i));
+      const custom = (state.customQuestions || []).map((t, i) => buildQuestionObj(t, 1000 + i));
+      allQuestions = [...custom, ...base];
+    }
+
+    function applyFilters(resetIdx = true) {
+      filteredQuestions = allQuestions.filter(q => {
+        if (state.levelFilter !== 'ALL' && q.level !== state.levelFilter) return false;
+        if (state.patternFilter === 'MISTAKE') return state.mistakeIds.includes(q.id);
+        if (state.patternFilter === 'FAV') return state.favIds.includes(q.id);
+        if (state.patternFilter !== 'ALL' && q.pattern !== state.patternFilter) return false;
+        return true;
+      });
+
+      if (filteredQuestions.length === 0) {
+        // 若当前筛选为空（如错题本为空），回退显示提示或切回 ALL
+        if (state.patternFilter === 'MISTAKE' || state.patternFilter === 'FAV') {
+          alert(state.patternFilter === 'MISTAKE' ? '太棒了！当前学段下还没有错题记录。' : '当前学段下还没有收藏的句子，点击题目右上角 ☆ 即可收藏。');
+          state.patternFilter = 'ALL';
+          return applyFilters(true);
         }
+      }
 
-        function saveProgressToStorage() {
-            localStorage.setItem('syntaxlab_solved_ids', JSON.stringify([...solvedIds]));
-            localStorage.setItem('syntaxlab_mistake_ids', JSON.stringify([...mistakeIds]));
-            localStorage.setItem('syntaxlab_favorite_ids', JSON.stringify([...favoriteIds]));
+      if (resetIdx || state.currentIndex >= filteredQuestions.length) {
+        state.currentIndex = 0;
+      }
+      renderFilterButtons();
+      renderCurrentQuestion();
+    }
+
+    function renderFilterButtons() {
+      // 统计各学段题量
+      const countByLevel = {
+        ALL: allQuestions.length,
+        hs: allQuestions.filter(q => q.level === 'hs').length,
+        uni: allQuestions.filter(q => q.level === 'uni').length,
+        adult: allQuestions.filter(q => q.level === 'adult').length
+      };
+      const levelLabels = {
+        ALL: `全部题库 (${countByLevel.ALL})`,
+        hs: `高中英语 (${countByLevel.hs})`,
+        uni: `大学四六级 (${countByLevel.uni})`,
+        adult: `自考成人本科 (${countByLevel.adult})`
+      };
+      ['ALL', 'hs', 'uni', 'adult'].forEach(lvl => {
+        const btn = document.getElementById('lvl-' + lvl);
+        if (!btn) return;
+        btn.textContent = levelLabels[lvl];
+        if (state.levelFilter === lvl) {
+          btn.className = 'lvl-btn shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white shadow-sm transition';
+        } else {
+          btn.className = 'lvl-btn shrink-0 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition';
         }
+      });
 
-        // ============================================================================
-        // 5. PATTERN FILTER, MISTAKE NOTEBOOK & QUESTION NAVIGATION
-        // ============================================================================
-        function renderPatternFilters() {
-            const container = document.getElementById('patternFilterContainer');
-            const patterns = ['ALL', 'SV', 'SVP', 'SVO', 'SVOO', 'SVOC'];
-
-            let html = patterns.map(pat => {
-                const info = SENTENCE_PATTERNS[pat];
-                const count = pat === 'ALL'
-                    ? allQuestions.length
-                    : allQuestions.filter(q => q.pattern === pat).length;
-                const active = currentFilter === pat;
-
-                return `
-                    <button
-                        onclick="setPatternFilter('${pat}')"
-                        class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                            active
-                                ? 'bg-indigo-600 text-white shadow-xs'
-                                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-                        }"
-                    >
-                        <span>${info.shortLabel}</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[11px] ${
-                            active ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500'
-                        }">${count}</span>
-                    </button>
-                `;
-            }).join('');
-
-            // Add Mistake Notebook & Favorites Tabs
-            const mistakeCount = allQuestions.filter(q => mistakeIds.has(q.id)).length;
-            const favCount = allQuestions.filter(q => favoriteIds.has(q.id)).length;
-
-            html += `
-                <button
-                    onclick="setPatternFilter('MISTAKES')"
-                    class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                        currentFilter === 'MISTAKES'
-                            ? 'bg-rose-600 text-white shadow-xs'
-                            : 'bg-white text-rose-600 hover:bg-rose-50 border border-rose-200'
-                    }"
-                >
-                    <i class="fa-solid fa-triangle-exclamation text-[11px]"></i>
-                    <span>错题本</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[11px] ${
-                        currentFilter === 'MISTAKES' ? 'bg-rose-500 text-white' : 'bg-rose-50 text-rose-600'
-                    }">${mistakeCount}</span>
-                </button>
-                <button
-                    onclick="setPatternFilter('FAVORITES')"
-                    class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                        currentFilter === 'FAVORITES'
-                            ? 'bg-amber-500 text-white shadow-xs'
-                            : 'bg-white text-amber-700 hover:bg-amber-50 border border-amber-200'
-                    }"
-                >
-                    <i class="fa-solid fa-star text-[11px]"></i>
-                    <span>收藏夹</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[11px] ${
-                        currentFilter === 'FAVORITES' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700'
-                    }">${favCount}</span>
-                </button>
-            `;
-
-            container.innerHTML = html;
-            renderQuestionDropdown();
+      // 句型按钮高亮
+      ['ALL', 'SV', 'SVP', 'SVO', 'SVOO', 'SVOC', 'MISTAKE', 'FAV'].forEach(pat => {
+        const btn = document.getElementById('pat-' + pat);
+        if (!btn) return;
+        if (state.patternFilter === pat) {
+          btn.className = 'pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-900 text-white transition';
+        } else {
+          btn.className = 'pat-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition';
         }
+      });
 
-        function setPatternFilter(filterKey) {
-            currentFilter = filterKey;
-            if (filterKey === 'ALL') {
-                filteredQuestions = [...allQuestions];
-            } else if (filterKey === 'MISTAKES') {
-                filteredQuestions = allQuestions.filter(q => mistakeIds.has(q.id));
-            } else if (filterKey === 'FAVORITES') {
-                filteredQuestions = allQuestions.filter(q => favoriteIds.has(q.id));
-            } else {
-                filteredQuestions = allQuestions.filter(q => q.pattern === filterKey);
-            }
+      document.getElementById('mistakeCountBadge').textContent = state.mistakeIds.length;
+      document.getElementById('favCountBadge').textContent = state.favIds.length;
 
-            currentIndex = 0;
-            renderPatternFilters();
+      // 模式按钮
+      const isBlocks = state.inputMode === 'blocks';
+      document.getElementById('modeBlocksBtn').className = isBlocks
+        ? 'px-2.5 py-1 rounded-md text-xs font-bold bg-white text-indigo-600 shadow-sm transition'
+        : 'px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 transition';
+      document.getElementById('modeTypingBtn').className = !isBlocks
+        ? 'px-2.5 py-1 rounded-md text-xs font-bold bg-white text-indigo-600 shadow-sm transition'
+        : 'px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 transition';
 
-            const emptyState = document.getElementById('emptyFilterState');
-            const mainCard = document.getElementById('questionMainCard');
-            const analysisSection = document.getElementById('analysisSection');
+      document.getElementById('blocksModeContainer').classList.toggle('hidden', !isBlocks);
+      document.getElementById('typingModeContainer').classList.toggle('hidden', isBlocks);
+    }
 
-            if (filteredQuestions.length === 0) {
-                mainCard.classList.add('hidden');
-                analysisSection.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                if (filterKey === 'MISTAKES') {
-                    document.getElementById('emptyFilterTitle').textContent = '太棒了！错题本目前是空的';
-                    document.getElementById('emptyFilterDesc').textContent = '你答错的句子会自动收录到这里，方便考前集中攻克薄弱句型。';
-                } else {
-                    document.getElementById('emptyFilterTitle').textContent = '收藏夹目前是空的';
-                    document.getElementById('emptyFilterDesc').textContent = '练习时点击题目右上角的星标 ⭐，即可把重点好句收藏到这里。';
-                }
-            } else {
-                emptyState.classList.add('hidden');
-                mainCard.classList.remove('hidden');
-                loadQuestion(0);
-            }
+    function setLevelFilter(lvl) {
+      state.levelFilter = lvl;
+      saveState();
+      applyFilters(true);
+    }
+
+    function setPatternFilter(pat) {
+      state.patternFilter = pat;
+      saveState();
+      applyFilters(true);
+    }
+
+    function setInputMode(mode) {
+      state.inputMode = mode;
+      saveState();
+      renderFilterButtons();
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function shuffleCurrentPool() {
+      filteredQuestions = shuffleArray(filteredQuestions);
+      state.currentIndex = 0;
+      renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+      const q = filteredQuestions[state.currentIndex];
+      if (!q) return;
+
+      // 顶部统计与进度
+      const total = filteredQuestions.length;
+      const curr = state.currentIndex + 1;
+      document.getElementById('progressText').textContent = `${curr} / ${total}`;
+      document.getElementById('progressBar').style.width = `${Math.round((curr / total) * 100)}%`;
+      document.getElementById('solvedCountText').textContent = state.solvedIds.length;
+      document.getElementById('streakText').textContent = state.streak;
+
+      // 学段与词数标签
+      const lvlInfo = LEVEL_META[q.level] || LEVEL_META.hs;
+      const lvlBadge = document.getElementById('qLevelBadge');
+      lvlBadge.textContent = lvlInfo.name;
+      lvlBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-semibold ${lvlInfo.badge}`;
+
+      document.getElementById('qWordCountBadge').textContent = `${q.words.length} 个词`;
+      document.getElementById('qDoneBadge').classList.toggle('hidden', !state.solvedIds.includes(q.id));
+
+      // 收藏星标
+      const isFav = state.favIds.includes(q.id);
+      const favBtn = document.getElementById('favBtn');
+      favBtn.textContent = isFav ? '⭐' : '☆';
+      favBtn.className = isFav ? 'p-1.5 rounded-lg hover:bg-slate-100 text-amber-500 transition text-base' : 'p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition text-base';
+
+      // 中文题干
+      document.getElementById('chinesePrompt').textContent = q.cn;
+
+      // 重置句型竞猜
+      currentPatternGuess = null;
+      document.getElementById('patternGuessResult').textContent = '';
+      document.querySelectorAll('.guess-pat-btn').forEach(btn => {
+        btn.className = 'guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center';
+      });
+
+      // 初始化打乱词块
+      const indexed = q.words.map((w, idx) => ({ word: w, origIdx: idx, used: false }));
+      currentBankWords = shuffleArray(indexed);
+      // 避免恰好与原句完全一致
+      if (currentBankWords.length > 1 && currentBankWords.map(i => i.word).join(' ') === q.en) {
+        [currentBankWords[0], currentBankWords[1]] = [currentBankWords[1], currentBankWords[0]];
+      }
+      selectedWordIndices = [];
+      renderWordBlocks();
+
+      // 重置打字框
+      const typingInput = document.getElementById('typingInput');
+      typingInput.value = '';
+      document.getElementById('typingHintText').classList.add('hidden');
+
+      // 隐藏上一次的解析面板
+      document.getElementById('resultPanel').classList.add('hidden');
+    }
+
+    function renderWordBlocks() {
+      const selectedBox = document.getElementById('selectedWordsBox');
+      const bankBox = document.getElementById('bankWordsBox');
+
+      // 渲染已选词块
+      if (selectedWordIndices.length === 0) {
+        selectedBox.innerHTML = `<span class="text-xs text-slate-400 select-none">点击下方词块按英语语序组句...</span>`;
+      } else {
+        selectedBox.innerHTML = selectedWordIndices.map((bankIdx, pos) => {
+          const item = currentBankWords[bankIdx];
+          return `<button onclick="unselectWord(${pos})" class="word-chip px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium shadow-sm hover:bg-indigo-700">${item.word}</button>`;
+        }).join('');
+      }
+
+      // 渲染候选词块
+      bankBox.innerHTML = currentBankWords.map((item, bankIdx) => {
+        if (item.used) {
+          return `<button disabled class="px-3 py-1.5 rounded-lg bg-slate-200/60 text-transparent text-sm font-medium border border-dashed border-slate-300 select-none">${item.word}</button>`;
         }
+        return `<button onclick="selectWord(${bankIdx})" class="word-chip px-3 py-1.5 rounded-lg bg-white hover:bg-indigo-50 text-slate-800 border border-slate-300 hover:border-indigo-300 text-sm font-medium shadow-sm">${item.word}</button>`;
+      }).join('');
+    }
 
-        function renderQuestionDropdown() {
-            const select = document.getElementById('questionSelect');
-            if (filteredQuestions.length === 0) {
-                select.innerHTML = `<option>暂无题目</option>`;
-                return;
-            }
-            select.innerHTML = filteredQuestions.map((q, idx) => {
-                const doneMark = solvedIds.has(q.id) ? '✓ ' : (mistakeIds.has(q.id) ? '✗ ' : '');
-                return `<option value="${idx}" ${idx === currentIndex ? 'selected' : ''}>
-                    ${doneMark}${idx + 1}. ${q.zh}
-                </option>`;
-            }).join('');
+    function selectWord(bankIdx) {
+      if (currentBankWords[bankIdx].used) return;
+      currentBankWords[bankIdx].used = true;
+      selectedWordIndices.push(bankIdx);
+      renderWordBlocks();
+    }
+
+    function unselectWord(posInSelected) {
+      const bankIdx = selectedWordIndices[posInSelected];
+      currentBankWords[bankIdx].used = false;
+      selectedWordIndices.splice(posInSelected, 1);
+      renderWordBlocks();
+    }
+
+    function clearSelectedWords() {
+      currentBankWords.forEach(item => item.used = false);
+      selectedWordIndices = [];
+      renderWordBlocks();
+    }
+
+    function selectPatternGuess(pat) {
+      currentPatternGuess = pat;
+      document.querySelectorAll('.guess-pat-btn').forEach(btn => {
+        if (btn.dataset.pat === pat) {
+          btn.className = 'guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-bold border-2 border-indigo-600 bg-indigo-50 text-indigo-700 transition text-center';
+        } else {
+          btn.className = 'guess-pat-btn py-1.5 px-1 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-700 hover:border-indigo-300 transition text-center';
         }
+      });
+    }
 
-        function jumpToQuestion(idxStr) {
-            const idx = parseInt(idxStr, 10);
-            if (!isNaN(idx) && idx >= 0 && idx < filteredQuestions.length) {
-                loadQuestion(idx);
-            }
+    function showFirstWordHint() {
+      const q = filteredQuestions[state.currentIndex];
+      if (!q) return;
+      const hintEl = document.getElementById('typingHintText');
+      hintEl.textContent = `💡 提示：前两个词是 "${q.words.slice(0, 2).join(' ')}" （共 ${q.words.length} 词）`;
+      hintEl.classList.remove('hidden');
+    }
+
+    function normalizeText(str) {
+      return str.replace(/[.,!?;:'"]/g, '').trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+
+    function checkAnswer() {
+      const q = filteredQuestions[state.currentIndex];
+      if (!q) return;
+
+      let userSentence = '';
+      if (state.inputMode === 'blocks') {
+        userSentence = selectedWordIndices.map(idx => currentBankWords[idx].word).join(' ');
+        if (!userSentence) {
+          alert('请先点击词块组成句子，或直接点“看解析”学习语法结构！');
+          return;
         }
-
-        function prevQuestion() {
-            if (filteredQuestions.length === 0) return;
-            const nextIdx = (currentIndex - 1 + filteredQuestions.length) % filteredQuestions.length;
-            loadQuestion(nextIdx);
+      } else {
+        userSentence = document.getElementById('typingInput').value.trim();
+        if (!userSentence) {
+          alert('请先输入你的英文翻译，或点击“看解析”！');
+          return;
         }
+      }
 
-        function nextQuestion() {
-            if (filteredQuestions.length === 0) return;
-            const nextIdx = (currentIndex + 1) % filteredQuestions.length;
-            loadQuestion(nextIdx);
+      const isCorrect = normalizeText(userSentence) === normalizeText(q.en);
+
+      if (isCorrect) {
+        state.streak += 1;
+        if (!state.solvedIds.includes(q.id)) state.solvedIds.push(q.id);
+        // 若答对且之前在错题本中，可保留或移除
+      } else {
+        state.streak = 0;
+        if (!state.mistakeIds.includes(q.id)) state.mistakeIds.push(q.id);
+      }
+
+      saveState();
+      renderFilterButtons();
+      document.getElementById('solvedCountText').textContent = state.solvedIds.length;
+      document.getElementById('streakText').textContent = state.streak;
+      document.getElementById('qDoneBadge').classList.toggle('hidden', !state.solvedIds.includes(q.id));
+
+      showBreakdownPanel(q, isCorrect, userSentence, false);
+    }
+
+    function revealBreakdownDirectly() {
+      const q = filteredQuestions[state.currentIndex];
+      if (!q) return;
+      showBreakdownPanel(q, null, '', true);
+    }
+
+    function showBreakdownPanel(q, isCorrect, userSentence, isDirectReveal) {
+      const panel = document.getElementById('resultPanel');
+      const banner = document.getElementById('resultBanner');
+      const icon = document.getElementById('resultIcon');
+      const title = document.getElementById('resultTitle');
+      const subtitle = document.getElementById('resultSubtitle');
+
+      // 批改句型竞猜结果
+      const guessResEl = document.getElementById('patternGuessResult');
+      if (currentPatternGuess) {
+        if (currentPatternGuess === q.pattern) {
+          guessResEl.textContent = `✅ 句型判断正确 (${q.pattern})！`;
+          guessResEl.className = 'text-xs font-bold text-emerald-600';
+        } else {
+          guessResEl.textContent = `❌ 本句实际是 ${PATTERN_META[q.pattern].name}`;
+          guessResEl.className = 'text-xs font-bold text-rose-600';
         }
-
-        function randomQuestion() {
-            if (filteredQuestions.length <= 1) return;
-            let randIdx = currentIndex;
-            while (randIdx === currentIndex) {
-                randIdx = Math.floor(Math.random() * filteredQuestions.length);
-            }
-            loadQuestion(randIdx);
-        }
-
-        // ============================================================================
-        // 6. LOADING A QUESTION & PREPARING MODES
-        // ============================================================================
-        function loadQuestion(index) {
-            currentIndex = index;
-            const q = filteredQuestions[currentIndex];
-            if (!q) return;
-
-            // Hide analysis & hint panels
-            document.getElementById('analysisSection').classList.add('hidden');
-            document.getElementById('hintPanel').classList.add('hidden');
-
-            // Reset optional pattern guess
-            selectedPatternGuess = null;
-            renderPatternGuessButtons();
-
-            // Tokenize target sentence into clean words
-            const rawWords = tokenizeSentence(q.en);
-
-            // Progress bar & Top badges
-            const progressPct = Math.round(((currentIndex + 1) / filteredQuestions.length) * 100);
-            document.getElementById('progressBarFill').style.width = `${progressPct}%`;
-            document.getElementById('questionIndexBadge').textContent = `第 ${currentIndex + 1} / ${filteredQuestions.length} 题`;
-            document.getElementById('wordCountBadge').textContent = `目标: ${rawWords.length} 词`;
-
-            const solvedBadge = document.getElementById('solvedStatusBadge');
-            if (solvedIds.has(q.id)) {
-                solvedBadge.classList.remove('hidden');
-            } else {
-                solvedBadge.classList.add('hidden');
-            }
-
-            // Update Favorite Star Button
-            updateFavoriteButtonUI(q.id);
-
-            // Prompt & Hints
-            document.getElementById('chinesePrompt').textContent = q.zh;
-            document.getElementById('hintPatternText').textContent = SENTENCE_PATTERNS[q.pattern].fullName;
-            document.getElementById('hintVocabText').textContent = q.vocabHint || q.chunks.map(c => `${c.text} (${c.cn})`).join(', ');
-            document.getElementById('hintFirstWordText').textContent = `${rawWords[0]} ...`;
-
-            // Prepare Word Block Mode
-            selectedWordIndices = [];
-            currentScrambledWords = shuffleArray(rawWords.map((w, i) => ({ word: w, origIndex: i })));
-            renderWordBlocksUI();
-
-            // Prepare Typing Mode
-            const typingInput = document.getElementById('typingInput');
-            typingInput.value = '';
-            if (inputMode === 'typing') {
-                setTimeout(() => typingInput.focus(), 50);
-            }
-
-            renderQuestionDropdown();
-        }
-
-        function renderPatternGuessButtons() {
-            const container = document.getElementById('patternGuessContainer');
-            const choices = ['SV', 'SVP', 'SVO', 'SVOO', 'SVOC'];
-            container.innerHTML = choices.map(code => {
-                const isSelected = selectedPatternGuess === code;
-                return `
-                    <button
-                        type="button"
-                        onclick="selectPatternGuess('${code}')"
-                        class="px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
-                            isSelected
-                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                                : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
-                        }"
-                    >
-                        ${SENTENCE_PATTERNS[code].shortLabel}
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function selectPatternGuess(code) {
-            selectedPatternGuess = (selectedPatternGuess === code) ? null : code;
-            renderPatternGuessButtons();
-        }
-
-        function toggleFavoriteCurrent() {
-            const q = filteredQuestions[currentIndex];
-            if (!q) return;
-            if (favoriteIds.has(q.id)) {
-                favoriteIds.delete(q.id);
-            } else {
-                favoriteIds.add(q.id);
-            }
-            saveProgressToStorage();
-            updateFavoriteButtonUI(q.id);
-            renderPatternFilters();
-        }
-
-        function updateFavoriteButtonUI(qId) {
-            const btn = document.getElementById('favBtn');
-            if (favoriteIds.has(qId)) {
-                btn.className = 'w-8 h-8 rounded-xl border border-amber-300 bg-amber-50 text-amber-500 flex items-center justify-center transition';
-                btn.innerHTML = '<i class="fa-solid fa-star"></i>';
-            } else {
-                btn.className = 'w-8 h-8 rounded-xl border border-slate-200 bg-white hover:bg-amber-50 text-slate-400 flex items-center justify-center transition';
-                btn.innerHTML = '<i class="fa-regular fa-star"></i>';
-            }
-        }
-
-        function tokenizeSentence(sentence) {
-            const cleaned = sentence.trim().replace(/[.?!]+$/, '');
-            return cleaned.split(/\s+/);
-        }
-
-        function shuffleArray(arr) {
-            const copy = [...arr];
-            for (let i = copy.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [copy[i], copy[j]] = [copy[j], copy[i]];
-            }
-            if (copy.length > 2 && copy.every((item, idx) => item.origIndex === idx)) {
-                [copy[0], copy[1]] = [copy[1], copy[0]];
-            }
-            return copy;
-        }
-
-        // ============================================================================
-        // 7. WORD BLOCK MODE & TYPING MODE INTERACTION
-        // ============================================================================
-        function switchInputMode(mode) {
-            inputMode = mode;
-            const blocksBtn = document.getElementById('modeBlocksBtn');
-            const typingBtn = document.getElementById('modeTypingBtn');
-            const blocksContainer = document.getElementById('blocksModeContainer');
-            const typingContainer = document.getElementById('typingModeContainer');
-
-            if (mode === 'blocks') {
-                blocksBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-white text-slate-900 shadow-xs';
-                typingBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900';
-                blocksContainer.classList.remove('hidden');
-                typingContainer.classList.add('hidden');
-            } else {
-                typingBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 bg-white text-slate-900 shadow-xs';
-                blocksBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900';
-                typingContainer.classList.remove('hidden');
-                blocksContainer.classList.add('hidden');
-                setTimeout(() => document.getElementById('typingInput').focus(), 50);
-            }
-        }
-
-        function renderWordBlocksUI() {
-            const selectedZone = document.getElementById('selectedWordsZone');
-            const bankZone = document.getElementById('wordBankZone');
-
-            if (selectedWordIndices.length === 0) {
-                selectedZone.innerHTML = `<span class="text-slate-400 text-xs sm:text-sm select-none">请点击下方单词卡片组成完整的英语句子...</span>`;
-            } else {
-                selectedZone.innerHTML = selectedWordIndices.map((bankIdx, pos) => {
-                    const item = currentScrambledWords[bankIdx];
-                    return `
-                        <button
-                            onclick="removeSelectedWord(${pos})"
-                            class="word-chip px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-rose-600 text-white font-semibold text-sm sm:text-base shadow-xs flex items-center gap-1.5"
-                            title="点击撤回该词"
-                        >
-                            <span>${item.word}</span>
-                        </button>
-                    `;
-                }).join('');
-            }
-
-            bankZone.innerHTML = currentScrambledWords.map((item, bankIdx) => {
-                const isUsed = selectedWordIndices.includes(bankIdx);
-                const keyNum = bankIdx < 9 ? `<span class="text-[10px] font-mono opacity-45 mr-0.5">${bankIdx + 1}</span>` : '';
-                return `
-                    <button
-                        onclick="selectWordFromBank(${bankIdx})"
-                        ${isUsed ? 'disabled' : ''}
-                        class="word-chip px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl font-semibold text-sm sm:text-base border transition flex items-center gap-1 ${
-                            isUsed
-                                ? 'bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed opacity-45'
-                                : 'bg-white hover:bg-indigo-50 text-slate-800 hover:text-indigo-700 border-slate-300 hover:border-indigo-300 shadow-xs'
-                        }"
-                    >
-                        ${keyNum}<span>${item.word}</span>
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function selectWordFromBank(bankIdx) {
-            if (!selectedWordIndices.includes(bankIdx)) {
-                selectedWordIndices.push(bankIdx);
-                renderWordBlocksUI();
-            }
-        }
-
-        function removeSelectedWord(positionInSelected) {
-            selectedWordIndices.splice(positionInSelected, 1);
-            renderWordBlocksUI();
-        }
-
-        function clearSelectedBlocks() {
-            selectedWordIndices = [];
-            renderWordBlocksUI();
-        }
-
-        function clearTypingInput() {
-            const input = document.getElementById('typingInput');
-            input.value = '';
-            input.focus();
-        }
-
-        function toggleHint() {
-            const panel = document.getElementById('hintPanel');
-            panel.classList.toggle('hidden');
-        }
-
-        // ============================================================================
-        // 8. ANSWER EVALUATION, SMART DIFF & SYNTAX BREAKDOWN RENDERING
-        // ============================================================================
-        function normalizeSentence(str) {
-            return str
-                .trim()
-                .replace(/[.?!,]+$/g, '')
-                .replace(/\s+/g, ' ')
-                .toLowerCase();
-        }
-
-        function getUserCurrentSentence() {
-            if (inputMode === 'blocks') {
-                return selectedWordIndices.map(idx => currentScrambledWords[idx].word).join(' ');
-            } else {
-                return document.getElementById('typingInput').value.trim();
-            }
-        }
-
-        function checkAnswer() {
-            const q = filteredQuestions[currentIndex];
-            if (!q) return;
-
-            const userRaw = getUserCurrentSentence();
-            const userNorm = normalizeSentence(userRaw);
-
-            const validTargets = [q.en, ...(q.alt || [])].map(normalizeSentence);
-            const isCorrect = userNorm.length > 0 && validTargets.includes(userNorm);
-
-            if (isCorrect) {
-                solvedIds.add(q.id);
-                mistakeIds.delete(q.id); // Remove from mistakes once mastered
-                currentStreak += 1;
-            } else {
-                mistakeIds.add(q.id);
-                currentStreak = 0;
-            }
-
-            saveProgressToStorage();
-            updateStatsUI();
-            renderPatternFilters();
-            renderSyntaxAnalysis(q, userRaw, isCorrect, false);
-        }
-
-        function revealAnswerDirectly() {
-            const q = filteredQuestions[currentIndex];
-            if (!q) return;
-            const userRaw = getUserCurrentSentence();
-            renderSyntaxAnalysis(q, userRaw, false, true);
-        }
-
-        function renderSyntaxAnalysis(q, userRaw, isCorrect, isDirectReveal) {
-            const section = document.getElementById('analysisSection');
-            section.classList.remove('hidden');
-
-            // 1. Configure Banner State
-            const banner = document.getElementById('resultBanner');
-            const iconBox = document.getElementById('resultIconBox');
-            const title = document.getElementById('resultTitle');
-            const subtitle = document.getElementById('resultSubtitle');
-            const guessBadge = document.getElementById('patternGuessResultBadge');
-
-            // Handle optional Sentence Pattern Guess feedback
-            if (selectedPatternGuess) {
-                guessBadge.classList.remove('hidden');
-                if (selectedPatternGuess === q.pattern) {
-                    guessBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-600 text-white';
-                    guessBadge.innerHTML = `<i class="fa-solid fa-bullseye mr-1"></i>句型判断正确 (${q.pattern})`;
-                } else {
-                    guessBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-white';
-                    guessBadge.innerHTML = `你猜了 ${selectedPatternGuess}，实际是 ${q.pattern}`;
-                }
-            } else {
-                guessBadge.classList.add('hidden');
-            }
-
-            if (isDirectReveal) {
-                banner.className = 'px-5 sm:px-7 py-4 flex flex-wrap items-center justify-between gap-3 border-b bg-indigo-50/80 border-indigo-200 text-indigo-950';
-                iconBox.className = 'w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold bg-indigo-600 text-white shrink-0';
-                iconBox.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i>';
-                title.textContent = '已展开标准答案与主谓宾成分拆解';
-                subtitle.textContent = '重点观察下方彩色语法卡片中主语、谓语、宾语、宾补/表语的位置关系';
-            } else if (isCorrect) {
-                banner.className = 'px-5 sm:px-7 py-4 flex flex-wrap items-center justify-between gap-3 border-b bg-emerald-50 border-emerald-200 text-emerald-950';
-                iconBox.className = 'w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold bg-emerald-600 text-white shrink-0';
-                iconBox.innerHTML = '<i class="fa-solid fa-check"></i>';
-                title.textContent = '回答正确！语序与语法结构完全匹配';
-                subtitle.textContent = `属于英语五大基本句型中的【${SENTENCE_PATTERNS[q.pattern].shortLabel}】`;
-                document.getElementById('solvedStatusBadge').classList.remove('hidden');
-            } else {
-                banner.className = 'px-5 sm:px-7 py-4 flex flex-wrap items-center justify-between gap-3 border-b bg-rose-50 border-rose-200 text-rose-950';
-                iconBox.className = 'w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold bg-rose-600 text-white shrink-0';
-                iconBox.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-                title.textContent = '语序或拼写有偏差，已加入错题本';
-                subtitle.textContent = '请看下方逐词批改与主谓宾成分拆解，重点留意英语的语序规则';
-            }
-
-            // 2. Sentence Pattern Info
-            const patternInfo = SENTENCE_PATTERNS[q.pattern];
-            document.getElementById('analysisPatternCode').textContent = q.pattern;
-            document.getElementById('analysisPatternFullName').textContent = patternInfo.fullName;
-            document.getElementById('analysisPatternDesc').textContent = patternInfo.desc;
-
-            // Formula Visual Flow
-            const formulaContainer = document.getElementById('analysisFormulaFlow');
-            formulaContainer.innerHTML = patternInfo.formula.map((step, i) => `
-                <div class="flex items-center gap-1.5">
-                    <span class="px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-xs border border-white/20 text-xs font-bold text-white">
-                        ${step}
-                    </span>
-                    ${i < patternInfo.formula.length - 1 ? '<i class="fa-solid fa-plus text-indigo-300 text-xs"></i>' : ''}
-                </div>
-            `).join('');
-
-            // 3. Smart Word-by-Word Diff Display
-            const userDisplay = document.getElementById('userAnswerDisplay');
-            const diffHint = document.getElementById('diffLegendHint');
-
-            if (!userRaw) {
-                diffHint.classList.add('hidden');
-                userDisplay.innerHTML = '<span class="text-slate-400 italic text-sm">（未输入回答，直接查看解析）</span>';
-            } else if (isCorrect) {
-                diffHint.classList.add('hidden');
-                const formatted = userRaw.endsWith('.') ? userRaw : `${userRaw}.`;
-                userDisplay.innerHTML = `<span class="text-emerald-700 font-bold">${formatted}</span>`;
-            } else {
-                diffHint.classList.remove('hidden');
-                const targetWords = tokenizeSentence(q.en);
-                const userWords = tokenizeSentence(userRaw);
-
-                userDisplay.innerHTML = userWords.map((uw, idx) => {
-                    const targetAtPos = targetWords[idx];
-                    const isExactPos = targetAtPos && targetAtPos.toLowerCase() === uw.toLowerCase();
-                    const isSomewhereInSentence = targetWords.some(tw => tw.toLowerCase() === uw.toLowerCase());
-
-                    if (isExactPos) {
-                        return `<span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 text-sm sm:text-base">${uw}</span>`;
-                    } else if (isSomewhereInSentence) {
-                        return `<span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-sm sm:text-base" title="单词正确但语序位置不对">${uw} <i class="fa-solid fa-arrows-left-right text-[10px] opacity-70"></i></span>`;
-                    } else {
-                        return `<span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 border border-rose-300 line-through text-sm sm:text-base" title="拼写或选词有误">${uw}</span>`;
-                    }
-                }).join('');
-            }
-
-            document.getElementById('standardAnswerDisplay').textContent = q.en;
-            const altEl = document.getElementById('altAnswersDisplay');
-            if (q.alt && q.alt.length > 0) {
-                altEl.textContent = `其他可接受表达：${q.alt.join(' / ')}`;
-                altEl.classList.remove('hidden');
-            } else {
-                altEl.classList.add('hidden');
-            }
-
-            // 4. Chunk-by-Chunk Syntax Breakdown Cards
-            const chunksContainer = document.getElementById('syntaxChunksContainer');
-            chunksContainer.innerHTML = q.chunks.map(chunk => {
-                const roleInfo = GRAMMAR_ROLES[chunk.role] || GRAMMAR_ROLES.ATTR;
-                const safeText = chunk.text.replace(/'/g, "\\'");
-                return `
-                    <div
-                        onclick="speakText('${safeText}')"
-                        class="p-4 rounded-2xl border ${roleInfo.cardClass} cursor-pointer hover:shadow-md transition flex flex-col justify-between gap-2.5 group"
-                        title="点击朗读该成分词块"
-                    >
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-2">
-                                <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold ${roleInfo.badgeClass}">
-                                    ${roleInfo.label}
-                                </span>
-                                <i class="fa-solid fa-volume-low text-xs opacity-40 group-hover:opacity-100 transition"></i>
-                            </div>
-                            <div class="text-lg sm:text-xl font-extrabold tracking-tight">
-                                ${chunk.text}
-                            </div>
-                            <div class="text-xs font-semibold opacity-80 mt-0.5">
-                                “${chunk.cn}”
-                            </div>
-                        </div>
-                        <div class="pt-2 border-t border-current/10 text-xs opacity-85 leading-relaxed">
-                            ${chunk.detail}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // 5. Inline Sentence Structure Ribbon
-            const ribbonContainer = document.getElementById('inlineRibbonContainer');
-            ribbonContainer.innerHTML = q.chunks.map(chunk => {
-                const roleInfo = GRAMMAR_ROLES[chunk.role] || GRAMMAR_ROLES.ATTR;
-                return `
-                    <div class="px-3 py-2 rounded-xl ${roleInfo.pillClass} flex flex-col items-center text-center">
-                        <span class="text-sm sm:text-base font-bold">${chunk.text}</span>
-                        <span class="text-[11px] font-bold uppercase tracking-wider opacity-80 mt-0.5">${roleInfo.short}</span>
-                    </div>
-                `;
-            }).join('');
-
-            // 6. Chinese vs English Word Order Contrast
-            renderCnEnOrderComparison(q);
-
-            // 7. Grammar Note
-            document.getElementById('grammarNoteText').textContent = q.note || '通过区分主语、谓语、宾语、宾补与表语，你可以快速掌握英语句子的造句语序。';
-
-            section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function renderCnEnOrderComparison(q) {
-            const container = document.getElementById('cnEnOrderComparison');
-            const badge = document.getElementById('orderDiffBadge');
-
-            // Sort chunks by where their Chinese phrase appears in the Chinese prompt
-            const zhSentence = q.zh;
-            const enOrderChunks = q.chunks;
-            const cnSortedChunks = [...q.chunks].sort((a, b) => {
-                const posA = zhSentence.indexOf(a.cn.replace(/from|\/.*/g, ''));
-                const posB = zhSentence.indexOf(b.cn.replace(/from|\/.*/g, ''));
-                return (posA === -1 ? 99 : posA) - (posB === -1 ? 99 : posB);
-            });
-
-            const isDifferentOrder = cnSortedChunks.some((c, i) => c.text !== enOrderChunks[i].text);
-
-            if (isDifferentOrder) {
-                badge.textContent = '⚠️ 注意中英语序倒装差异';
-                badge.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-800';
-            } else {
-                badge.textContent = '✓ 中英语序基本一致';
-                badge.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800';
-            }
-
-            const renderFlow = (list, isCn) => list.map((c, idx) => {
-                const roleInfo = GRAMMAR_ROLES[c.role] || GRAMMAR_ROLES.ATTR;
-                return `
-                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-slate-200 font-medium text-slate-700">
-                        <span class="px-1.5 py-0.2 rounded text-[10px] font-bold ${roleInfo.badgeClass}">${c.role === 'LV' ? 'V' : c.role}</span>
-                        <span>${isCn ? c.cn : c.text}</span>
-                    </span>
-                    ${idx < list.length - 1 ? '<i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>' : ''}
-                `;
-            }).join('');
-
-            container.innerHTML = `
-                <div class="flex flex-wrap items-center gap-1">
-                    <span class="text-slate-400 font-semibold w-14 shrink-0">汉语思维:</span>
-                    <div class="flex flex-wrap items-center gap-1 flex-1">${renderFlow(cnSortedChunks, true)}</div>
-                </div>
-                <div class="flex flex-wrap items-center gap-1">
-                    <span class="text-indigo-600 font-semibold w-14 shrink-0">英语语序:</span>
-                    <div class="flex flex-wrap items-center gap-1 flex-1">${renderFlow(enOrderChunks, false)}</div>
-                </div>
-            `;
-        }
-
-        function updateStatsUI() {
-            document.getElementById('statStreak').textContent = currentStreak;
-            document.getElementById('statSolved').textContent = solvedIds.size;
-            document.getElementById('statTotal').textContent = allQuestions.length;
-        }
-
-        // ============================================================================
-        // 9. TEXT-TO-SPEECH (TTS) PRONUNCIATION
-        // ============================================================================
-        function speakCurrentSentence() {
-            const q = filteredQuestions[currentIndex];
-            if (q) speakText(q.en);
-        }
-
-        function speakText(text) {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'en-US';
-            utter.rate = 0.92;
-            window.speechSynthesis.speak(utter);
-        }
-
-        // ============================================================================
-        // 10. CUSTOM QUESTION BUILDER & SHARE / IMPORT MODALS
-        // ============================================================================
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            } else {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        function openCustomModal() {
-            document.getElementById('customZh').value = '';
-            document.getElementById('customEn').value = '';
-            document.getElementById('customNote').value = '';
-            document.getElementById('customFormError').classList.add('hidden');
-            document.getElementById('customChunksTagger').innerHTML = `<span class="text-xs text-slate-400">请先在上方输入英文句子...</span>`;
-            toggleModal('customModal');
-        }
-
-        function generateCustomChunkTagger() {
-            const enText = document.getElementById('customEn').value.trim();
-            const container = document.getElementById('customChunksTagger');
-
-            if (!enText) {
-                container.innerHTML = `<span class="text-xs text-slate-400">请先在上方输入英文句子...</span>`;
-                return;
-            }
-
-            const words = tokenizeSentence(enText);
-            container.innerHTML = words.map((word, idx) => {
-                let defaultRole = 'O';
-                if (idx === 0) defaultRole = 'S';
-                else if (idx === 1) defaultRole = 'V';
-                else if (idx === words.length - 1 && words.length >= 4) defaultRole = 'C';
-
-                const optionsWithDefault = Object.keys(GRAMMAR_ROLES).map(key => {
-                    return `<option value="${key}" ${key === defaultRole ? 'selected' : ''}>${GRAMMAR_ROLES[key].short}</option>`;
-                }).join('');
-
-                return `
-                    <div class="flex items-center justify-between gap-2 bg-white p-2 rounded-xl border border-slate-200">
-                        <span class="font-bold text-slate-800 px-2 truncate">${word}</span>
-                        <select data-word="${word}" class="custom-word-role text-xs border border-slate-300 rounded-lg px-2 py-1 bg-slate-50 text-slate-700 focus:outline-none">
-                            ${optionsWithDefault}
-                        </select>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function saveCustomQuestion() {
-            const zh = document.getElementById('customZh').value.trim();
-            const enRaw = document.getElementById('customEn').value.trim();
-            const pattern = document.getElementById('customPattern').value;
-            const note = document.getElementById('customNote').value.trim();
-            const errEl = document.getElementById('customFormError');
-
-            if (!zh || !enRaw) {
-                errEl.textContent = '请填写完整的中文题目和标准英文句子！';
-                errEl.classList.remove('hidden');
-                return;
-            }
-
-            const words = tokenizeSentence(enRaw);
-            if (words.length < 2 || words.length > 15) {
-                errEl.textContent = '英文句子建议控制在 2 到 12 个单词之间！';
-                errEl.classList.remove('hidden');
-                return;
-            }
-
-            const roleSelects = document.querySelectorAll('.custom-word-role');
-            const rawChunks = [];
-            roleSelects.forEach(sel => {
-                rawChunks.push({
-                    text: sel.getAttribute('data-word'),
-                    role: sel.value
-                });
-            });
-
-            // Merge consecutive words that share the exact same grammatical role
-            const mergedChunks = [];
-            rawChunks.forEach(item => {
-                const last = mergedChunks[mergedChunks.length - 1];
-                if (last && last.role === item.role) {
-                    last.text += ' ' + item.text;
-                } else {
-                    mergedChunks.push({
-                        text: item.text,
-                        role: item.role,
-                        cn: GRAMMAR_ROLES[item.role].short,
-                        detail: `充当句子中的${GRAMMAR_ROLES[item.role].label}`
-                    });
-                }
-            });
-
-            const formattedEn = /[.?!]$/.test(enRaw) ? enRaw : `${enRaw}.`;
-            const newQuestion = {
-                id: Date.now(),
-                pattern: pattern,
-                zh: zh,
-                en: formattedEn,
-                alt: [],
-                vocabHint: words.join(', '),
-                chunks: mergedChunks,
-                note: note || `本句属于【${SENTENCE_PATTERNS[pattern].fullName}】。`
-            };
-
-            allQuestions.push(newQuestion);
-
-            const savedCustom = safeParseJSON('syntaxlab_custom_questions', []);
-            savedCustom.push(newQuestion);
-            localStorage.setItem('syntaxlab_custom_questions', JSON.stringify(savedCustom));
-
-            toggleModal('customModal');
-            setPatternFilter(pattern);
-            loadQuestion(filteredQuestions.length - 1);
-            updateStatsUI();
-        }
-
-        // Share & Challenge Code Logic
-        function openShareModal() {
-            document.getElementById('shareModalMsg').textContent = '';
-            document.getElementById('copyChallengeBtnText').textContent = '一键复制微信挑战文案';
-            toggleModal('shareModal');
-        }
-
-        function copyWeChatChallenge() {
-            const q = filteredQuestions[currentIndex] || allQuestions[0];
-            const url = window.location.href;
-            const shareText = `🔥【汉译英与五大句型挑战】\n我已在 SyntaxLab 掌握了 ${solvedIds.size} 个核心句型！\n\n👉 考考你这句话怎么翻译成英语？并且它属于哪种句型（主谓宾/主系表/主谓双宾/主谓宾宾补）？\n题目：「${q.zh}」\n\n点击链接在线拼句看语法拆解：${url}`;
-
-            navigator.clipboard.writeText(shareText).then(() => {
-                document.getElementById('copyChallengeBtnText').textContent = '✓ 已复制！快去微信粘贴给好友吧';
-            }).catch(() => {
-                document.getElementById('shareCodeInput').value = shareText;
-                document.getElementById('shareModalMsg').textContent = '已生成挑战文案，请复制上方文本框内容';
-            });
-        }
-
-        function exportCustomCode() {
-            const savedCustom = safeParseJSON('syntaxlab_custom_questions', []);
-            const msgEl = document.getElementById('shareModalMsg');
-            if (savedCustom.length === 0) {
-                msgEl.className = 'text-xs font-medium text-amber-600';
-                msgEl.textContent = '你还没有添加过自定义题目哦！可以先点右上角“出题”。';
-                return;
-            }
-            const code = 'SYNTAX:' + btoa(encodeURIComponent(JSON.stringify(savedCustom)));
-            document.getElementById('shareCodeInput').value = code;
-            navigator.clipboard.writeText(code).catch(() => {});
-            msgEl.className = 'text-xs font-medium text-emerald-600';
-            msgEl.textContent = `✓ 已生成包含 ${savedCustom.length} 道自定义题目的口令并复制到剪贴板！`;
-        }
-
-        function importCustomCode() {
-            const raw = document.getElementById('shareCodeInput').value.trim();
-            const msgEl = document.getElementById('shareModalMsg');
-            if (!raw.startsWith('SYNTAX:')) {
-                msgEl.className = 'text-xs font-medium text-rose-600';
-                msgEl.textContent = '口令格式不正确，请确认粘贴了以 SYNTAX: 开头的完整口令。';
-                return;
-            }
-            try {
-                const jsonStr = decodeURIComponent(atob(raw.replace('SYNTAX:', '')));
-                const importedList = JSON.parse(jsonStr);
-                if (!Array.isArray(importedList) || importedList.length === 0) throw new Error();
-
-                const existingCustom = safeParseJSON('syntaxlab_custom_questions', []);
-                const existingEnSet = new Set(allQuestions.map(q => q.en));
-                let addedCount = 0;
-
-                importedList.forEach(item => {
-                    if (item && item.zh && item.en && !existingEnSet.has(item.en)) {
-                        existingCustom.push(item);
-                        allQuestions.push(item);
-                        existingEnSet.add(item.en);
-                        addedCount++;
-                    }
-                });
-
-                localStorage.setItem('syntaxlab_custom_questions', JSON.stringify(existingCustom));
-                renderPatternFilters();
-                setPatternFilter('ALL');
-                updateStatsUI();
-
-                msgEl.className = 'text-xs font-medium text-emerald-600';
-                msgEl.textContent = `🎉 成功导入 ${addedCount} 道新题目！`;
-            } catch (e) {
-                msgEl.className = 'text-xs font-medium text-rose-600';
-                msgEl.textContent = '口令解析失败，请检查口令是否完整。';
-            }
-        }
-
-        // Launch App on load
-        window.addEventListener('DOMContentLoaded', initApp);
-    </script>
+      } else {
+        guessResEl.textContent = `本句句型：${PATTERN_META[q.pattern].name}`;
+        guessResEl.className = 'text-xs font-semibold text-indigo-600';
+      }
+
+      // 顶部横幅状态
+      if (isDirectReveal) {
+        banner.className = 'px-4 py-3 border-b bg-indigo-50 border-indigo-200 text-indigo-950 flex items-center justify-between';
+        icon.textContent = '📖';
+        title.textContent = `标准答案：${q.en}.`;
+        subtitle.textContent = '请重点观察下方的主谓宾/宾补/表语成分拆解';
+      } else if (isCorrect) {
+        banner.className = 'px-4 py-3 border-b bg-emerald-50 border-emerald-200 text-emerald-950 flex items-center justify-between';
+        icon.textContent = '🎉';
+        title.textContent = `回答正确！${q.en}.`;
+        subtitle.textContent = `语序与语法结构完全准确 · 当前连对 ${state.streak} 题`;
+      } else {
+        banner.className = 'px-4 py-3 border-b bg-rose-50 border-rose-200 text-rose-950 flex items-center justify-between';
+        icon.textContent = '💡';
+        title.textContent = `正确句子：${q.en}.`;
+        subtitle.textContent = '已自动加入「错题本」，请对比下方的语序诊断与成分拆解';
+      }
+
+      // 逐词对比诊断（仅在答错时显示）
+      const diffSection = document.getElementById('wordDiffSection');
+      const diffBox = document.getElementById('wordDiffBox');
+      if (!isDirectReveal && !isCorrect && userSentence) {
+        diffSection.classList.remove('hidden');
+        const userWords = userSentence.replace(/[.,!?;:]/g, '').trim().split(/\s+/);
+        const targetLower = q.words.map(w => w.toLowerCase());
+        diffBox.innerHTML = userWords.map((uw, idx) => {
+          const uwLower = uw.toLowerCase();
+          if (targetLower[idx] === uwLower) {
+            return `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs font-semibold">✓ ${uw}</span>`;
+          } else if (targetLower.includes(uwLower)) {
+            return `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs font-semibold" title="选词正确但位置放错了">⇄ ${uw} (语序错)</span>`;
+          } else {
+            return `<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-xs font-semibold line-through">${uw}</span>`;
+          }
+        }).join('');
+      } else {
+        diffSection.classList.add('hidden');
+      }
+
+      // 句型公式横幅
+      const pMeta = PATTERN_META[q.pattern];
+      document.getElementById('sentencePatternTitle').textContent = pMeta.name;
+      document.getElementById('sentencePatternFormula').textContent = pMeta.formula;
+
+      // 渲染语法成分拆解卡片
+      const cardsContainer = document.getElementById('syntaxCardsContainer');
+      cardsContainer.innerHTML = q.parts.map(part => {
+        const rMeta = ROLE_META[part.role] || ROLE_META.S;
+        const safeText = part.text.replace(/'/g, "\\'");
+        return `
+          <div onclick="speakText('${safeText}')" class="cursor-pointer rounded-xl border p-3 transition hover:shadow-sm ${rMeta.card}">
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold border ${rMeta.badge}">${rMeta.name}</span>
+              <span class="text-[11px] opacity-60">🔊</span>
+            </div>
+            <div class="text-base font-bold tracking-tight mt-1">${part.text}</div>
+            <div class="text-xs opacity-80 mt-0.5">${part.label}</div>
+          </div>
+        `;
+      }).join('');
+
+      // 中英语序对比流
+      const orderBox = document.getElementById('orderComparisonBox');
+      const enOrderFlow = q.parts.map(p => `<span class="inline-block px-2 py-0.5 rounded bg-white border border-slate-200 font-medium text-slate-800">${p.text} <strong class="text-indigo-600">[${p.label}]</strong></span>`).join(' <span class="text-slate-400">→</span> ');
+      orderBox.innerHTML = `
+        <div><span class="font-semibold text-slate-500">中文原句：</span><span class="text-slate-800 font-medium">${q.cn}</span></div>
+        <div class="flex flex-wrap items-center gap-1 pt-0.5"><span class="font-semibold text-slate-500">英语语序：</span>${enOrderFlow}</div>
+      `;
+
+      // 考点解析
+      document.getElementById('grammarTipText').textContent = q.tip || '注意观察主干成分（主谓宾/表/补）与修饰成分（状语/定语）的位置关系。';
+
+      panel.classList.remove('hidden');
+      speakText(q.en);
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function prevQuestion() {
+      if (filteredQuestions.length === 0) return;
+      state.currentIndex = (state.currentIndex - 1 + filteredQuestions.length) % filteredQuestions.length;
+      renderCurrentQuestion();
+    }
+
+    function nextQuestion() {
+      if (filteredQuestions.length === 0) return;
+      state.currentIndex = (state.currentIndex + 1) % filteredQuestions.length;
+      renderCurrentQuestion();
+    }
+
+    function toggleFavoriteCurrent() {
+      const q = filteredQuestions[state.currentIndex];
+      if (!q) return;
+      const idx = state.favIds.indexOf(q.id);
+      if (idx === -1) {
+        state.favIds.push(q.id);
+      } else {
+        state.favIds.splice(idx, 1);
+      }
+      saveState();
+      renderFilterButtons();
+      renderCurrentQuestion();
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        u.rate = 0.92;
+        window.speechSynthesis.speak(u);
+      } catch (e) {}
+    }
+
+    function speakCurrentSentence() {
+      const q = filteredQuestions[state.currentIndex];
+      if (q) speakText(q.en);
+    }
+
+    // 题库目录弹窗
+    function openCatalogModal() {
+      const modal = document.getElementById('catalogModal');
+      const listContainer = document.getElementById('catalogListContainer');
+      document.getElementById('catalogSubTitle').textContent = `当前筛选共 ${filteredQuestions.length} 道题（点击任意题目直接跳转）`;
+
+      listContainer.innerHTML = filteredQuestions.map((q, idx) => {
+        const lvl = LEVEL_META[q.level] || LEVEL_META.hs;
+        const isSolved = state.solvedIds.includes(q.id);
+        const isCurrent = idx === state.currentIndex;
+        return `
+          <div onclick="jumpToQuestion(${idx})" class="cursor-pointer p-2.5 rounded-xl border transition flex items-center justify-between gap-2 ${isCurrent ? 'bg-indigo-50 border-indigo-400' : 'bg-white hover:bg-slate-50 border-slate-200'}">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-mono text-slate-400">#${idx + 1}</span>
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold ${lvl.badge}">${lvl.name}</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold">${q.pattern}</span>
+                ${isSolved ? '<span class="text-[10px] text-emerald-600 font-bold">✓ 已掌握</span>' : ''}
+              </div>
+              <div class="text-xs sm:text-sm font-semibold text-slate-800 truncate mt-1">${q.cn}</div>
+            </div>
+            <span class="text-xs text-indigo-600 shrink-0 font-medium">练习 →</span>
+          </div>
+        `;
+      }).join('');
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeCatalogModal() {
+      document.getElementById('catalogModal').classList.add('hidden');
+    }
+
+    function jumpToQuestion(idx) {
+      state.currentIndex = idx;
+      closeCatalogModal();
+      renderCurrentQuestion();
+    }
+
+    // 句型速查弹窗
+    function openGuideModal() {
+      document.getElementById('guideModal').classList.remove('hidden');
+    }
+    function closeGuideModal() {
+      document.getElementById('guideModal').classList.add('hidden');
+    }
+
+    // 自定义出题弹窗
+    function openCustomModal() {
+      document.getElementById('customModal').classList.remove('hidden');
+    }
+    function closeCustomModal() {
+      document.getElementById('customModal').classList.add('hidden');
+    }
+
+    function saveCustomQuestion() {
+      const level = document.getElementById('customLevel').value;
+      const pattern = document.getElementById('customPattern').value;
+      const cn = document.getElementById('customCn').value.trim();
+      const spec = document.getElementById('customSpec').value.trim();
+      const tip = document.getElementById('customTip').value.trim() || '自定义语法练习题';
+
+      if (!cn || !spec || !spec.includes(':')) {
+        alert('请填写中文题目，并按格式填写语法分块（例如：Knowledge:S:主语|makes:V:谓语|us:O:宾语|stronger:C:宾补）');
+        return;
+      }
+
+      state.customQuestions.unshift([level, pattern, cn, spec, tip]);
+      saveState();
+      rebuildAllQuestions();
+      closeCustomModal();
+      applyFilters(true);
+    }
+
+    // 启动初始化
+    loadState();
+    rebuildAllQuestions();
+    applyFilters(true);
+  </script>
 </body>
 </html>
